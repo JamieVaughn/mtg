@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="../mtg.css">
+    <link rel="stylesheet" href="../css/mtg.css">
     <title>Magic the Gathering Booster Pack Viewer - Lit HTML</title>
 </head>
 <body>
@@ -43,7 +43,7 @@
                     <h3>
                         <span class='type' title='Type: ${c.type}'>${c.type}</span>
                     </h3>
-                    <div class='card-text ${c.text.length > 150 ? 'small-font' : ''}'>
+                    <div class='card-text ${c.text.length > 160 ? 'small-font' : ''}'>
                         ${c.text ? c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}
                     </div>
                     <footer class='footnote'>
@@ -87,7 +87,7 @@
         // https://docs.magicthegathering.io/#documentationgetting_started
         // https://api.magicthegathering.io/v1/sets/<setCode>/booster
         var setCodes;
-        fetch('../setcodes.json')
+        fetch('../json/setcodes.json')
         .then(resp => {
             render(Loading(), litApp)
             return resp.json()

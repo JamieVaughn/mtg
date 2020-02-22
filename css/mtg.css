@@ -6,7 +6,7 @@ body {
     box-sizing: border-box;
     margin: 0;
     padding: 1rem;
-    background: center / cover no-repeat url('bg-lg.jpg');
+    background: center / cover no-repeat url('img/bg-lg.jpg');
     color: #f1f1f1;
 }
 body > header {
@@ -86,11 +86,11 @@ header > span {
 .mana.color {
     padding: 0 0.7rem;
 }
-.B {background: url('symbols_mana.png') 63.5px 0;}
-.U {background: url('symbols_mana.png') 84.5px 0;}
-.G {background: url('symbols_mana.png') 21.5px 0;}
-.R {background: url('symbols_mana.png') 42.5px 0;}
-.W {background: url('symbols_mana.png') 0.5px 0;}
+.B {background: url('img/symbols_mana.png') 63.5px 0;}
+.U {background: url('img/symbols_mana.png') 84.5px 0;}
+.G {background: url('img/symbols_mana.png') 21.5px 0;}
+.R {background: url('img/symbols_mana.png') 42.5px 0;}
+.W {background: url('img/symbols_mana.png') 0.5px 0;}
 .T {
     padding: 0 2px 0 2px !important; 
     display: inline-block; 
