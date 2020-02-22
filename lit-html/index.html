@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../mtg.css">
+    <title>Magic the Gathering Booster Pack Viewer - Lit HTML</title>
+</head>
+<body>
+    <!-- https://lit-html.polymer-project.org/guide/writing-templates -->
+    <header>
+        <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 160"><style>.st0{fill:#fff}.st1{opacity:.8}.st1,.st2,.st3{fill:#f52757}.st2{opacity:.7}.st3{opacity:.6}.st4{opacity:.68;fill:#1e88e5}.st5{opacity:.76}.st5,.st6,.st7{fill:#1e88e5}.st6{opacity:.84}.st7{opacity:.94}.st8{opacity:.65}.st8,.st9{fill:#f52757}.st10{fill:#1e88e5}.st11{opacity:.92}.st11,.st12{fill:#0d47a1}</style><path class="st0" d="M93.1 4.3H49.4L5.7 80l43.7 75.7h43.7l65.6-113.6L180.6 80l-43.7 75.7h43.7L224.3 80 180.6 4.3h-43.7L71.3 117.9 49.4 80z"/><path class="st1" d="M115 42.1l21.8-37.8 21.9 37.8z"/><path class="st2" d="M115 42.1L136.8 80l21.9-37.9z"/><path class="st3" d="M93.1 80L115 42.1 136.8 80z"/><path class="st4" d="M49.4 4.3l21.9 37.8L93.1 4.3z"/><path class="st5" d="M27.6 42.1L49.4 4.3l21.9 37.8z"/><path class="st6" d="M27.6 42.1L49.4 80l21.9-37.9z"/><path class="st7" d="M5.7 80l21.9-37.9L49.4 80z"/><path class="st8" d="M93.1 80l21.9 37.9L136.8 80z"/><path class="st2" d="M71.3 117.9L93.1 80l21.9 37.9z"/><path class="st1" d="M71.3 117.9l21.8 37.8 21.9-37.8z"/><path class="st9" d="M49.4 155.7l21.9-37.8 21.8 37.8z"/><path class="st10" d="M5.7 80l21.9 37.9L49.4 80z"/><path class="st4" d="M180.6 155.7l-21.9-37.8-21.8 37.8z"/><path class="st5" d="M202.4 117.9l-21.8 37.8-21.9-37.8z"/><path class="st6" d="M202.4 117.9L180.6 80l-21.9 37.9z"/><path class="st7" d="M224.3 80l-21.9 37.9L180.6 80z"/><path class="st10" d="M224.3 80l-21.9-37.9L180.6 80z"/><path class="st11" d="M71.3 117.9L49.4 80l-21.8 37.9z"/><path class="st12" d="M71.3 117.9l-21.9 37.8-21.8-37.8z"/><path class="st9" d="M136.8 4.3l21.9 37.8 21.9-37.8z"/><path class="st12" d="M202.4 42.1L180.6 4.3l-21.9 37.8z"/><path class="st11" d="M202.4 42.1L180.6 80l-21.9-37.9z"/></svg>
+        <h2>An experiment with lit-html templating library for simple data hydration tasks</h2>
+    </header>
+    <div id="title"></div>
+    <div id="lit"></div>
+    <script type='module'>
+        //  https://lit-html.polymer-project.org/guide
+        import {html, render} from './node_modules/lit-html/lit-html.js';    
+        const title = document.querySelector('#title')
+        const litApp = document.querySelector('#lit')
+        const template = {
+            title: 'MTG: Booster Pack Viewer'
+        }
+
+        const spinner = html`<svg width='50px' height='50px' viewBox='0 0 50 50'>
+                                <circle fill="none" stroke="dodgerblue" stroke-width="4"  stroke-dasharray="45,40" cx="25" cy="25" r="15"/>
+                                <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
+                            </svg>`
+        const Header = (title) => html`<h1 class='refresh'>${title}</h1>`
+        const Cards = (cards) => html`
+        <div class='showcase'>
+            ${cards.map(c => html`<article title='Card Set: ${c.setName}''>
+                <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                    <header>
+                        <span class='name'>${c.name}</span>
+                        <span class='cost'>${c.manaCost ? renderMana(c.manaCost) : ''}</span>
+                    </header>
+                    <img
+                    class=${c.imageUrl ? 'magic' : ''}
+                    src=${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/220x120.png?text=Card+Image+Not+Available'} />
+                    <h3>
+                        <span class='type' title='Type: ${c.type}'>${c.type}</span>
+                    </h3>
+                    <div class='card-text ${c.text.length > 150 ? 'small-font' : ''}'>
+                        ${c.text ? c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}
+                    </div>
+                    <footer class='footnote'>
+                        <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
+                        <span class='p-t'>${c.types[0] == 'Creature' ? c.power + ' / ' + c.toughness : ''}</span>
+                    </footer>
+                </div>
+            </article>`)}
+        </div>
+        `
+        const Loading = () => {
+            return html`
+            <div class='loading'>
+                <h2>Fetching Magic Cards.</h3>
+                <h6>(This API is rather slow...)</h6>
+                ${spinner}
+            </div>
+            `
+        }
+        const Error = (err) => html`
+            <div class='error'>
+                <h2>There was an problem fetching the cards. Attempting Contignency fetch.</h2>
+                <h5>${err}</h5>
+            </div>
+            `
+        
+        const renderMana = (mana) => html`
+            ${mana
+                .split(/[\{\}]+/)
+                .filter(i => i.length)
+                .map(m => m.length === 1 && m.match(/[BRUGWXETC0-9]/)? html`
+                    <span class='mana ${m.match(/[BRUGW]/) ? 'color' : 'colorless'} ${m}'>
+                        ${m.match(/[BRUGW]/) ? '' : m}
+                    </span>
+                ` : html`${m}`)
+            }
+        `
+
+        render(Header(template.title), title)
+
+        // https://docs.magicthegathering.io/#documentationgetting_started
+        // https://api.magicthegathering.io/v1/sets/<setCode>/booster
+        var setCodes;
+        fetch('../setcodes.json')
+        .then(resp => {
+            render(Loading(), litApp)
+            return resp.json()
+        })
+        .then(data => {
+            setCodes = data.setCodes
+            return data.setCodes[Math.floor(Math.random()*data.setCodes.length)]
+        })
+        .then(code => {
+            getBooster(code)
+        })
+
+        function getBooster(set) {
+            fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
+            .then(resp => {
+                if(resp.ok) return resp.json()
+                console.log(set)
+                getBooster('CON')
+            })
+            .then(data => {
+                console.log(data.cards)
+                render(Cards(data.cards), litApp)
+            })
+            .catch(err => render(Error(err), litApp))
+        }
+        title.addEventListener('click', () => {
+            render(Loading(), litApp)
+            getBooster(setCodes[Math.floor(Math.random()*setCodes.length)])
+        })
+    </script>
+</body>
+</html>
