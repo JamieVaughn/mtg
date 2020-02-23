@@ -162,6 +162,7 @@ footer {
 .p-t {
     font-weight: bold;
     font-size: 1.3rem;
+    line-height: 1.1rem;
     font-family: cursive;
     white-space: nowrap;
 }

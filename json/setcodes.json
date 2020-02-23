@@ -6,7 +6,6 @@
         "5DN",
         "5ED",
         "6ED",
-        "7ED",
         "AER",
         "AKH",
         "ALA",
@@ -21,5 +20,10 @@
         "CHK",
         "CHR",
         "CMA",
-        "CN2", "CNS", "CON", "CSP", "DDI", "DDQ", "DGM", "DIS", "DOM", "DST", "DTK", "E02", "ELD", "EMN", "EVE", "EXO"]
+        "CN2", 
+        "CNS", 
+        "CON", 
+        "CSP", 
+        "DGM", 
+        "DIS", "DOM", "DST", "DTK", "ELD", "EMN", "EVE", "EXO"]
 }

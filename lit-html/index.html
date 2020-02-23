@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="_/img/favicon.png">
     <link rel="stylesheet" href="../css/mtg.css">
     <title>Magic the Gathering Booster Pack Viewer - Lit HTML</title>
 </head>
@@ -27,7 +28,7 @@
                                 <circle fill="none" stroke="dodgerblue" stroke-width="4"  stroke-dasharray="45,40" cx="25" cy="25" r="15"/>
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
                             </svg>`
-        const Header = (title) => html`<h1 class='refresh'>MTG: Booster Pack Viewer</h1>`
+        const Header = () => html`<h1 class='refresh'>MTG: Booster Pack Showcase</h1>`
         const Cards = (cards) => html`
         <div class='showcase'>
             ${cards.map(c => html`<article title='Card Set: ${c.setName}''>
@@ -81,9 +82,8 @@
             }
         `
 
-        render(Header(template.title), title)
+        render(Header(), title)
 
-        // https://docs.magicthegathering.io/#documentationgetting_started
         // https://api.magicthegathering.io/v1/sets/<setCode>/booster
         var setCodes;
         fetch('../json/setcodes.json')
