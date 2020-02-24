@@ -31,10 +31,22 @@
                 return this // removes the shadow root so global css works
             }
             render(){
-                return html`<h1 class='refresh' @click=${() => console.log('clicky')}>MTG: Booster Pack Showcase</h1>`
+                return html`<h1>MTG: Booster Pack Showcase</h1>`
             }
         }
-
+        const handleHover = {
+            handleEvent(e){
+                // console.log(e.target)
+                if(e.target.classList.value.includes('back')) {
+                    e.target.offsetParent.classList.add('flipped')
+                    setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+                } else if(e.target.classList.value.includes('content')) {
+                    e.target.classList.add('flipped')
+                    setTimeout(()=>e.target.classList.add('done'), 600)
+                }
+            },
+            once: true
+        }
         class MyCards extends LitElement {
             static get properties() {
                 return {
@@ -48,6 +60,7 @@
                 this.error = false;
             }
             firstUpdated(changedProperties){
+                this.response = [];
                   // https://api.magicthegathering.io/v1/sets/<setCode>/booster
                 fetch('../json/setcodes.json')
                 .then(resp => {
@@ -80,31 +93,36 @@
                 const {response} = this;
                 return response.length ? html`
                 <div>
-                    <my-header></my-header>
+                    <my-header @click=${this.firstUpdated}></my-header>
                     <div class='showcase'>
-                        ${response.map(c => html`<article title='Card Set: ${c.setName}''>
-                            <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
-                                <header>
-                                    <span class='name'>${c.name}</span>
-                                    <span class='cost'>${c.manaCost ? html`<render-mana mana='${c.manaCost}'></render-mana>` : ''}</span>
-                                </header>
-                                <img
-                                class=${c.imageUrl ? 'magic' : ''}
-                                src=${c.imageUrl ? 
-                                    c.imageUrl : 
-                                    'https://via.placeholder.com/220x120.png?text=Card+Image+Not+Available'} />
-                                <h3>
-                                    <span class='type' title='Type: ${c.type}'>${c.type}</span>
-                                </h3>
-                                <div class='card-text ${c.text?.length > 160 ? 'small-font' : ''}'>
-                                    ${c.text ? c.text?.match(/[\{\}]+/) ? html`<render-mana mana='${c.text}'></render-mana>` : c.text : c.flavor}
+                        ${response.map(c => html`<div class='card' @mouseover='${handleHover}'>
+                        <div class='content'>
+                            <img src='../img/card_back.jpeg' class='back'/>
+                            <article title='Card Set: ${c.setName}' class='front'>
+                                <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                                    <header>
+                                        <span class='name'>${c.name}</span>
+                                        <span class='cost'>${c.manaCost ? html`<render-mana mana='${c.manaCost}'></render-mana>` : ''}</span>
+                                    </header>
+                                    <img
+                                    class=${c.imageUrl ? 'magic' : ''}
+                                    src=${c.imageUrl ? 
+                                        c.imageUrl : 
+                                        'https://via.placeholder.com/220x120.png?text=Card+Image+Not+Available'} />
+                                    <h3>
+                                        <span class='type' title='Type: ${c.type}'>${c.type}</span>
+                                    </h3>
+                                    <div class='card-text ${c.text?.length > 160 ? 'small-font' : ''}'>
+                                        ${c.text ? c.text?.match(/[\{\}]+/) ? html`<render-mana mana='${c.text}'></render-mana>` : c.text : c.flavor}
+                                    </div>
+                                    <footer class='footnote'>
+                                        <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
+                                        <span class='p-t'>${c.types[0] == 'Creature' ? c.power + ' / ' + c.toughness : ''}</span>
+                                    </footer>
                                 </div>
-                                <footer class='footnote'>
-                                    <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
-                                    <span class='p-t'>${c.types[0] == 'Creature' ? c.power + ' / ' + c.toughness : ''}</span>
-                                </footer>
-                            </div>
-                        </article>`)}
+                            </article>
+                        </div>
+                        </div>`)}
                     </div>
                 </div>
                 ` : this.error ? html`<my-error error='${this.error}></my-error>` : html`<my-loader></my-loader>`;

@@ -24,6 +24,20 @@
         const title = document.querySelector('#title')
         const litApp = document.querySelector('#lit')
 
+        const handleHover = {
+            handleEvent(e){
+                // console.log(e.target)
+                if(e.target.classList.value.includes('back')) {
+                    e.target.offsetParent.classList.add('flipped')
+                    setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+                } else if(e.target.classList.value.includes('content')) {
+                    e.target.classList.add('flipped')
+                    setTimeout(()=>e.target.classList.add('done'), 600)
+                }
+            },
+            once: true
+        }
+
         const spinner = html`<svg width='50px' height='50px' viewBox='0 0 50 50'>
                                 <circle fill="none" stroke="dodgerblue" stroke-width="4"  stroke-dasharray="45,40" cx="25" cy="25" r="15"/>
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
@@ -31,19 +45,23 @@
         const Header = () => html`<h1 class='refresh'>MTG: Booster Pack Showcase</h1>`
         const Cards = (cards) => html`
         <div class='showcase'>
-            ${cards.map(c => html`<article title='Card Set: ${c.setName}''>
+            ${cards.map(c => html`
+                <div class='card' @mouseover='${handleHover}'>
+                <div class='content'>
+                <img src='../img/card_back.jpeg' class='back'/>
+                <article title='Card Set: ${c.setName}' class='front'>
                 <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
                     <header>
                         <span class='name'>${c.name}</span>
                         <span class='cost'>${c.manaCost ? renderMana(c.manaCost) : ''}</span>
                     </header>
                     <img
-                    class=${c.imageUrl ? 'magic' : ''}
+                    class='portrait ${c.imageUrl ? 'magic' : ''}'
                     src=${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/220x120.png?text=Card+Image+Not+Available'} />
                     <h3>
                         <span class='type' title='Type: ${c.type}'>${c.type}</span>
                     </h3>
-                    <div class='card-text ${c.text.length > 160 ? 'small-font' : ''}'>
+                    <div class='card-text ${c.text?.length > 160 ? 'small-font' : ''}'>
                         ${c.text ? c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}
                     </div>
                     <footer class='footnote'>
@@ -51,7 +69,9 @@
                         <span class='p-t'>${c.types[0] == 'Creature' ? c.power + ' / ' + c.toughness : ''}</span>
                     </footer>
                 </div>
-            </article>`)}
+            </article>
+        </div>
+        </div>`)}
         </div>
         `
         const Loading = () => {
@@ -66,6 +86,7 @@
         const Error = (err) => html`
             <div class='error'>
                 <h2>There was an problem fetching the cards. Attempting Contignency fetch.</h2>
+                ${spinner}
                 <h5>${err}</h5>
             </div>
             `

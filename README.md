@@ -3,7 +3,7 @@
 ### Experiments with various modern, lightweight templating libraries to render Magic the Gathering cards
 
 This project was something I've been wanting to do as a way to take inventory on the best lightweight web templating tools out there
-right now. So I'm ignoring the larger frameworks like React, Vue, Angular and others which require a build step. For this I'm considering small, client-side packages that are only concerned with templating and hydrating the DOM with data. 
+right now. So I'm ignoring the larger frameworks like React, Vue, Angular and others which require a build step. For this I'm considering small, client-side packages that are only concerned with templating and hydrating the DOM with data and has at least a minimal event handling API.
 
 As late as 2019 I used Handlebars when I was creating a customer support application embedded in Zendesk that with a search input would simply GET customer data from a database for the agents' reference while fielding support calls. There were a few buttons that could POST updates to the customer profile as well. It worked fine, but I regretted the Handlebars choice somewhat as I later learned about the full spectrum of possible templating tools that were out there that would have been a better fit for that task... and in a smaller bundle size to boot. 
 
@@ -13,8 +13,6 @@ Lit-HTML was among the first to catch my eye, but many other small view/template
 * Lit-HTML (demo)[https://wjv.io/mtg/lit-html]
 * Lit-Element (demo)[https://wjv.io/mtg/lit-element]
 * Preact (demo)[https://wjv.io/mtg/preact]
-
-
 
 #### My Opinion on each library for small scale data templating purposes
  
@@ -26,6 +24,18 @@ Lit-HTML was among the first to catch my eye, but many other small view/template
 | Preact        | ⭑⭑⭑⭑⭑ | 704kB | JSX, Functional Style, Composibility, JS-in-template    | No Shadow DOM |
 
 ###### *Handlebars not demonstrated here, but rating is based on prior experience in professional project
+
+### A screenshot of the App:
+![App Screenshot](/img/demo.png)
+
+Some highlights:
+* Data Fetching, hydrating and loading spinner
+* Event handling:
+    * Mouse over flip animation 
+    * Click header to fetch new pack
+* Render Mana Icons Component: 
+    * Tested limits of templating logic capabilities 
+    * Showed ease of component reusability/composability in Header & Card Text
 
 # API used for data for this templating experiment
 * https://docs.magicthegathering.io/#documentationgetting_started
