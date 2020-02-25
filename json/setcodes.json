@@ -19,11 +19,10 @@
         "BOK",
         "CHK",
         "CHR",
-        "CMA",
         "CN2", 
         "CNS", 
         "CON", 
         "CSP", 
         "DGM", 
-        "DIS", "DOM", "DST", "DTK", "ELD", "EMN", "EVE", "EXO"]
+        "DIS", "DOM", "DST", "DTK", "ELD", "EVE", "EXO"]
 }

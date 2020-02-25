@@ -64,22 +64,21 @@ article {
     margin: 4px;
 }
 .content {
-    /* transition: transform 1s; */
     transform-style: preserve-3d;
     will-change: contents;
-    /* transition: transform 0.5s; */
-
 }
 @keyframes flip {
-    from{transform: rotateY(0deg)}
-    to{transform: rotateY(180deg)}
+    0%{transform: rotateY(0deg) rotateZ(0deg) rotateX(0deg)}
+    50%{transform: rotateY(90deg) rotateZ(-15deg) rotateX(15deg)}
+    100%{transform: rotateY(180deg) rotateZ(0deg) rotateX(0deg)}
 }
 .card:hover .content:not(.done) {
-    /* transform: rotateY( 180deg ) ; */
-    animation: flip 0.5s 1;
+    animation: flip 0.5s 1 ease-in;
     animation-fill-mode: forwards;
 }
-.flipped { transform: rotateY(180deg)}
+.flipped { 
+    transform: rotateY(180deg);
+}
 .front {
     backface-visibility: hidden;
     transform: rotateY( 180deg );
@@ -90,7 +89,6 @@ article {
     width: 100%;
     backface-visibility: hidden;
     border-radius: 1rem;
-    /* z-index: 9; */
 }
 .border {
     padding: 8px 1.25rem;

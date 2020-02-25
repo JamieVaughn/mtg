@@ -50,23 +50,23 @@
                 <div class='content'>
                 <img src='../img/card_back.jpeg' class='back'/>
                 <article title='Card Set: ${c.setName}' class='front'>
-                <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
                     <header>
-                        <span class='name'>${c.name}</span>
+                        <span class='name' title='${c.name}'>${c.name}</span>
                         <span class='cost'>${c.manaCost ? renderMana(c.manaCost) : ''}</span>
                     </header>
                     <img
-                    class='portrait ${c.imageUrl ? 'magic' : ''}'
-                    src=${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/220x120.png?text=Card+Image+Not+Available'} />
+                    class='magic portrait'
+                    src=${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'} />
                     <h3>
                         <span class='type' title='Type: ${c.type}'>${c.type}</span>
                     </h3>
-                    <div class='card-text ${c.text?.length > 160 ? 'small-font' : ''}'>
-                        ${c.text ? c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}
+                    <div class='card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}'>
+                        ${c.text ? c.text && c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}
                     </div>
                     <footer class='footnote'>
                         <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
-                        <span class='p-t'>${c.types[0] == 'Creature' ? c.power + ' / ' + c.toughness : ''}</span>
+                        <span class='p-t'>${c.types.includes('Creature') ? c.power + ' / ' + c.toughness : ''}</span>
                     </footer>
                 </div>
             </article>
@@ -85,7 +85,7 @@
         }
         const Error = (err) => html`
             <div class='error'>
-                <h2>There was an problem fetching the cards. Attempting Contignency fetch.</h2>
+                <h2>There was a problem fetching the cards. Attempting Contignency fetch.</h2>
                 ${spinner}
                 <h5>${err}</h5>
             </div>
