@@ -16,6 +16,11 @@ body > header {
     align-items: center;
     font-size: 1rem;
 }
+.lib-logo {
+    width: 100px;
+    height: auto;
+    font-size: 2rem;
+}
 svg {
     height: 64px;
     width: 64px;

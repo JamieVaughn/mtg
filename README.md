@@ -12,6 +12,8 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 * Lit-HTML [demo](https://wjv.io/mtg/lit-html)
 * Lit-Element [demo](https://wjv.io/mtg/lit-element)
 * Preact [demo](https://wjv.io/mtg/preact)
+* SlimJS [demo](https://wjv.io/mtg/slim) (WIP)
+* HauntedJS [demo](https://wjv.io/mtg/haunted)
 
 ### My opinion on each library for small scale data templating purposes:
  
@@ -19,17 +21,18 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 | :-----------: |:------- | :-----: | :-----: | :-----: |
 | Handlebars*   | ★☆☆☆☆  | 2.2MB | HTML Templates | Heaviest Restricted Template Logic, No JSX, No Shadow DOM |
 | Lit HTMl      | ★★★☆☆  | 519kB | Flexible, Composability        | HTML strings, No Shadow DOM |
-| Lit Element   | ★★★★☆  | 222kB | Web Components, Stateful, Very Light | Verbose Class Syntax, HTML Strings |
-| Preact        | ★★★★☆ | 704kB | Composibility, htm lib, Hooks, componentDidCatch, createContext    | No Shadow DOM |
-| Marko         | ★★★☆☆ | 77.5kB | Web Components, Lightest    |  |
-| Inferno         | ★★★☆☆ | 77.5kB | Web Components, Lightest    |  |
-| Riot         | ★★★☆☆ | 77.5kB | Web Components, Lightest    |  |
-| SlimJS        | ★★★☆☆ | 77.5kB | Web Components, Lightest    |  |
+| Lit Element   | ★★★★☆  | 222kB | Web Components, Stateful, Very Light | Verbose Syntax, HTML Strings |
+| Preact        | ★★★★☆ | 704kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib |
+| SlimJS        | ★★★☆☆ | 3kB | Web Components, Lightest  | no Functional Components, DSL**: Conditional logic, Binding syntax |
+| HauntedJS     | ★★★★☆ | 74.6kB + 519kB| "Hooks for Web Components" | No Methods, Dependency: Lit-HTML |
+| Marko         | ★★★☆☆ | 77.5kB | Web Components   |  |
+| Inferno         | ★★★☆☆ | 77.5kB | Web Components   |  |
+| Riot         | ★★★☆☆ | 77.5kB | Web Components    |  |
 | SkateJS       | ★★★☆☆ | 68.1kB | Web Components, Lightest    |  |
-| HauntedJS     | ★★★☆☆ | 74.6kB + 519kB| "Hooks for Web Components"    |  Uses Lit-HTML|
 
 
-###### *Handlebars not demonstrated here as it does not qualify with 1MB size limit, but rating is based on prior experience in professional project and is included for comparison purposes since comparing to it was the motivation for this project.
+###### *Handlebars is not demonstrated here as it does not qualify with 1MB size limit, but its rating is based on prior experience in a professional project and is included for comparison purposes since comparing to it was the motivation for this project.
+###### **DSL -> Domain Specific Language
 
 ### A screenshot of the App:
 ![App Screenshot](/img/demo.png)
