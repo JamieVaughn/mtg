@@ -47,6 +47,17 @@
             },
             once: true
         }
+        const handleDblClick = {
+            handleEvent(e){
+                let cardClasses = e.currentTarget.classList
+                if(cardClasses.value.includes('lightbox')) {
+                    cardClasses.remove('lightbox')
+                } else {
+                    cardClasses.add('lightbox')
+                }
+            },
+            capture: true
+        }
         class MyCards extends LitElement {
             static get properties() {
                 return {
@@ -95,7 +106,7 @@
                 <div>
                     <my-header @click=${this.firstUpdated}></my-header>
                     <div class='showcase'>
-                        ${response.map(c => html`<div class='card' @mouseover='${handleHover}'>
+                        ${response.map(c => html`<div class='card' @mouseover=${handleHover} @dblclick=${handleDblClick}>
                         <div class='content'>
                             <img src='../img/card_back.jpeg' class='back'/>
                             <article title='Card Set: ${c.setName}' class='front'>
@@ -125,7 +136,9 @@
                         </div>`)}
                     </div>
                 </div>
-                ` : this.error ? html`<my-error error='${this.error}></my-error>` : html`<my-loader></my-loader>`;
+                ` 
+                : this.error ? html`<my-error error='${this.error}></my-error>` 
+                : html`<my-loader></my-loader>`;
             }
         }
         class MyLoader extends LitElement {

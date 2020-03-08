@@ -64,9 +64,17 @@ article {
     border-radius: 1rem;
     max-width: 270px;
 }
+.card.lightbox {
+    transform: scale(3);
+    z-index: 99;
+    position: fixed;
+    top: 50%;
+    bottom: 0;
+}
 .card {
     perspective: 500px;
     margin: 4px;
+    transition: all 350ms;
 }
 .content {
     transform-style: preserve-3d;
@@ -202,6 +210,9 @@ footer {
     line-height: 1.1rem;
     font-family: cursive;
     white-space: nowrap;
+}
+.Devoid .p-t, .Devoid .illus {
+    text-shadow: 0 0 8px black;
 }
 .error {
     font-size: 2rem;

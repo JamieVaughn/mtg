@@ -17,7 +17,8 @@
         <h2>An experiment with (3kB) Slim.js web component library for simple data hydration tasks</h2>
     </header>
     <my-header></my-header>
-    <my-cards></my-cards>
+    <card-showcase></card-showcase>
+    <my-tag></my-tag>
     <script type='module'>
         // https://slimjs.com/#/creating-an-element
 
@@ -25,6 +26,18 @@
         // import {tag, template} from 'https://unpkg.com/slim-js@4.0.7/Decorators.js';    
 
         var setCodes;
+
+        Slim.tag("my-tag",
+        '<div s:if={{myBoolean}}>Now you see me</div>' +
+  '<div s:if={{!myBoolean}}>Now you do not!</div>',
+class MyTag extends Slim {
+  onBeforeCreated() {
+    this.myBoolean = true;
+    setInterval(() => {
+      this.myBoolean = !this.myBoolean
+    }, 5000)
+  }
+})
 
         Slim.tag(
             'my-spinner',
@@ -38,6 +51,58 @@
             'my-header',
             `<h1>MTG: Booster Pack Showcase</h1>`,
             class MyHeader extends Slim {}    
+        )
+        Slim.tag(
+            'card-showcase',
+            `<div class='showcase'>
+                <div s:if="mycards.length" s:repeat='mycards as c'>
+                    <my-card bind:card={{c}}></my-card>
+                </div>
+                <my-error s:if="error"></my-error>
+                <my-loader s:if="loading"></my-loader>
+            </div>
+            `,
+            class CardShowcase extends Slim {
+                // get useShadow() { return true } // enable ShadowDOM
+                onBeforeCreated () {
+                    // initializing State
+                    this.error = false;
+                    this.loading = true;
+                    this.mycards = [];
+                }
+                fetchData() {
+                    this.loaging = true;
+                    // fetching data
+                    // https://api.magicthegathering.io/v1/sets/<setCode>/booster
+                    fetch('../json/setcodes.json')
+                    .then(resp => {
+                        return resp.json()
+                    })
+                    .then(data => {
+                        setCodes = data.setCodes
+                        return data.setCodes[Math.floor(Math.random()*data.setCodes.length)]
+                    })
+                    .then(set => {
+                        fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
+                        .then(resp => {
+                            if(resp.ok) return resp.json()
+                            console.log(set)
+                            fetch(`https://api.magicthegathering.io/v1/sets/CON/booster`)
+                            .then(r=>r.json()).then(d=>this.mycards = d.cards)
+                        })
+                        .then(data => {
+                            console.log(this.error, this.mycards)
+                            this.loading = false;
+                            this.mycards =  data.cards
+                            console.log(this.mycards)
+                        })
+                        .catch(err => (this.loading = false, this.error = err))
+                    })
+                }
+                onCreated(){
+                    this.fetchData()
+                }
+            }
         )
         const handleHover = {
             handleEvent(e){
@@ -53,10 +118,9 @@
             once: true
         }
         Slim.tag(
-            'my-cards',
-            `<div s:if="this.cards.length">
-                <div class='showcase'>
-                    <div class='card' s:repeat='this.cards as c' @mouseover='{{handleHover}}'>
+            'my-card',
+            `<div>
+                    <div class='card' @mouseover='{{handleHover}}'>
                     <div class='content'>
                         <img src='../img/card_back.jpeg' class='back'/>
                         <article title='Card Set: {{c.setName}}' class='front'>
@@ -86,40 +150,11 @@
                         </article>
                     </div>
                     </div>
-                </div>
             </div>
-            <my-error s:if="this.error" error="this.error"></my-error>
-            <my-loader s:if="!this.error && !this.cards.length"></my-loader>`,
-            class MyCards extends Slim {
-                // get useShadow() { return true } // enable ShadowDOM
-                onBeforeCreated () {
-                    // initializing State
-                    this.error = false;
-                    this.cards = [];
-                    // fetching data
-                    // https://api.magicthegathering.io/v1/sets/<setCode>/booster
-                    fetch('../json/setcodes.json')
-                    .then(resp => {
-                        return resp.json()
-                    })
-                    .then(data => {
-                        setCodes = data.setCodes
-                        return data.setCodes[Math.floor(Math.random()*data.setCodes.length)]
-                    })
-                    .then(set => {
-                        fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
-                        .then(resp => {
-                            if(resp.ok) return resp.json()
-                            console.log(set)
-                            fetch(`https://api.magicthegathering.io/v1/sets/CON/booster`)
-                            .then(r=>r.json()).then(d=>this.cards = d.cards)
-                        })
-                        .then(data => {
-                            this.cards =  data.cards
-                            console.log(this.cards)
-                        })
-                        .catch(err => this.error = err)
-                    })
+            `,
+            class MyCard extends Slim {
+                onBeforeCreated() {
+                    this.c = {}
                 }
             }
         )
