@@ -25,7 +25,7 @@
 
         // import { h, Component, render } from 'https://unpkg.com/preact?module';
 
-        import { html, render } from 'https://unpkg.com/htm/preact/standalone.module.js' // this pkg bundles preact and htm
+        import { html, render } from './preact.js' // this pkg bundles preact and htm
         const root = document.querySelector('#root')
         const app = document.querySelector('#app')
         
@@ -108,7 +108,7 @@
         }
         const Error = (err) => html`
             <div class='error'>
-                <h2>There was a problem fetching the cards. Attempting Contignency fetch.</h2>
+                <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
                 ${spinner}
                 <h5>${err}</h5>
             </div>

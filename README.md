@@ -12,11 +12,12 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 * Lit-HTML [demo](https://wjv.io/mtg/lit-html) 
 * Lit-Element [demo](https://wjv.io/mtg/lit-element) (with double-click lightbox feature)
 * Preact [demo](https://wjv.io/mtg/preact)
-* Inferno [demo](https://wjv.io/mtg/inferno)
 * HauntedJS [demo](https://wjv.io/mtg/haunted)
-* SlimJS [demo](https://wjv.io/mtg/slim) (WIP)
-* Moon [demo](https://wjv.io/mtg/moon)
+* SlimJS [demo](https://wjv.io/mtg/slim) (Not all features implemented)
 * AppRun [demo](https://wjv.io/mtg/apprun) https://github.com/yysun/apprun
+* In progress:
+* Moon [demo](https://wjv.io/mtg/moon)
+* Inferno [demo](https://wjv.io/mtg/inferno)
 * Cycle [demo](https://wjv.io/mtg/cycle) https://cycle.js.org/
 
 ### My opinion on each library for small scale data templating purposes:
@@ -27,14 +28,14 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 | Lit HTMl      | ★★★☆☆ | 519kB | 3.5kB | Flexible, Composability, Modules | HTML strings, No Shadow DOM |
 | Lit Element   | ★★★★☆ | 222kB | 6.9kB | Web Components**, Stateful | Verbose Syntax, HTML Strings |
 | Preact        | ★★★★☆ | 704kB | 4kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib |
-| HauntedJS     | ★★★★☆ | 74.6kB + 519kB | 5.4kB | "Hooks for Web Components" | Lacks Custom Methods, Manual Props, Dependency: Lit-HTML |
+| HauntedJS     | ★★★★★ | 74.6kB + 519kB | 5.4kB | "Hooks for Web Components" | Lacks Custom Methods, Manual Props, Dependency: Lit-HTML |
+| SlimJS        | ★★☆☆☆ | 5kB   | 2.7kB | Web Components, Minimalist | Difficult to use, Documentation is lacking, No Functional Components, DSL***: Conditional logic, Binding syntax |
 | In progress:       |  |  |  |  |  |
-| SlimJS        | ★★★☆☆ | 3kB   | 2.7kB | Web Components, Minimalist | No Functional Components, DSL***: Conditional logic, Binding syntax |
+| AppRun        | ★★★☆☆ | 586kB | 4.5kB | Elm architecture | |
+| StimulusJS       | ★★★☆☆ | 1.3MB | 4.6kB | FRP****| |
+| CycleJS       | ★★★☆☆ | 1.3MB | 4.6kB | FRP****| |
 | Moon          | ★★☆☆☆ | 376kB + 29kB | 2.6kB | JSX-like    | 29kB compiler, DSL: Drivers, No SVG support |
 | Inferno       | ★★★☆☆ | 672kB | 20kB |  |  |
-| AppRun        | ★★★☆☆ | 586kB | 4.5kB | Elm architecture | |
-| CycleJS       | ★★★☆☆ | 1.3MB | 4.6kB | FRP****| |
-| StimulusJS       | ★★★☆☆ | 1.3MB | 4.6kB | FRP****| |
 | AlpineJS       | ★★★☆☆ |  |  | Closest to VanillaJS| |
 
 

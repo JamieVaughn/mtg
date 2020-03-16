@@ -7,8 +7,8 @@
     <link rel="icon" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/mtg.css">
     <title>Magic the Gathering Booster Pack Viewer - Slim.js</title>
-    <!-- <script type="module" src="slim-js/Slim.js"></script>
-    <script type="module" src="slim-js/directives/..."></script> -->
+    <!-- <script src='https://unpkg.com/slim-js@4.0.1/Slim.nomodule.js'></script>
+    <script src="https://unpkg.com/slim-js@4.0.1/directives/all.nomodule.js"></script> -->
 </head>
 </head>
 <body>
@@ -18,26 +18,13 @@
     </header>
     <my-header></my-header>
     <card-showcase></card-showcase>
-    <my-tag></my-tag>
     <script type='module'>
         // https://slimjs.com/#/creating-an-element
 
         import {Slim} from 'https://unpkg.com/slim-js@4.0.7/Slim.js';
-        // import {tag, template} from 'https://unpkg.com/slim-js@4.0.7/Decorators.js';    
+        import 'https://unpkg.com/slim-js@4.0.7/directives/all.js';
 
         var setCodes;
-
-        Slim.tag("my-tag",
-        '<div s:if={{myBoolean}}>Now you see me</div>' +
-  '<div s:if={{!myBoolean}}>Now you do not!</div>',
-class MyTag extends Slim {
-  onBeforeCreated() {
-    this.myBoolean = true;
-    setInterval(() => {
-      this.myBoolean = !this.myBoolean
-    }, 5000)
-  }
-})
 
         Slim.tag(
             'my-spinner',
@@ -55,7 +42,7 @@ class MyTag extends Slim {
         Slim.tag(
             'card-showcase',
             `<div class='showcase'>
-                <div s:if="mycards.length" s:repeat='mycards as c'>
+                <div s:if="mycards.length" s:repeat='mycards as c' bind>
                     <my-card bind:card={{c}}></my-card>
                 </div>
                 <my-error s:if="error"></my-error>
@@ -104,47 +91,35 @@ class MyTag extends Slim {
                 }
             }
         )
-        const handleHover = {
-            handleEvent(e){
-                // console.log(e.target)
-                if(e.target.classList.value.includes('back')) {
-                    e.target.offsetParent.classList.add('flipped')
-                    setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
-                } else if(e.target.classList.value.includes('content')) {
-                    e.target.classList.add('flipped')
-                    setTimeout(()=>e.target.classList.add('done'), 600)
-                }
-            },
-            once: true
-        }
+        
         Slim.tag(
             'my-card',
-            `<div>
-                    <div class='card' @mouseover='{{handleHover}}'>
+            `<div s:if="c.name">
+                    <div class='card' mouseover='e => this.handleHover(e)'>
                     <div class='content'>
                         <img src='../img/card_back.jpeg' class='back'/>
                         <article title='Card Set: {{c.setName}}' class='front'>
-                            <div class='{{c.colors[0] || c.colorIdentity[0]}} {{c.types.join(' ')}} {{c.text && c.text.includes('Devoid') ? 'Devoid' : ''}} border {{c.rarity}}'>
+                            <div bind:class='colorClass'>
                                 <header>
                                     <span class='name' title='{{c.name}}'>{{c.name}}</span>
                                     <span class='cost'>
-                                        <render-mana s:if="c.manaCost" mana='{{c.manaCost}}'></render-mana>
+                                        <render-mana s:if="c.manaCost" bind:mana={{c.manaCost}}></render-mana>
                                     </span>
                                 </header>
                                 <img
                                 class='magic portrait'
-                                src={{c.imageUrl || 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'}} />
+                                bind:src="c.imageUrl" />
                                 <h3>
                                     <span class='type' title='Type: {{c.type}}'>{{c.type}}</span>
                                 </h3>
                                 <div class='card-text {{c.text && c.text.length > 160 ? 'small-font' : ''}}'>
                                     <span s:if="!c.text">{{c.flavor}}</span>
-                                    <span s:if="c.text.match(/[\{\}]+/)"><render-mana mana='{{c.text}}'></render-mana></span>
+                                    <span s:if="c.text.match(/[\{\}]+/)"><render-mana bind:mana={{c.text}}></render-mana></span>
                                     <span s:if="c.text">{{c.text}}</span>
                                 </div>
                                 <footer class='footnote'>
                                     <span class='illus' title='{{c.artist}}'>Illus. @ {{c.artist}}</span>
-                                    <span class='p-t' s:if="c.types.includes('Creature')">{{c.power}} / {{c.toughness}}</span>
+                                    <span class='p-t'>{{isCreature}}</span>
                                 </footer>
                             </div>
                         </article>
@@ -155,6 +130,23 @@ class MyTag extends Slim {
             class MyCard extends Slim {
                 onBeforeCreated() {
                     this.c = {}
+                    this.colorClass = ''
+                    this.isCreature = ''
+                }
+                onAdded(){
+                    this.c.imageUrl = this.c.imageUrl || 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND';
+                    this.colorClass = `${this.c.colors[0] || this.c.colorIdentity[0]} ${this.c.types.join(' ')} ${this.c.text && this.c.text.includes('Devoid') ? 'Devoid' : ''} border ${this.c.rarity}`;
+                    this.isCreature = this.c.types.includes('Creature') ? `${this.c.power} / ${this.c.toughness}` : ''
+                }
+                handleHover(e) {
+                    console.log(e.target)
+                    if(e.target.classList.value.includes('back')) {
+                        e.target.offsetParent.classList.add('flipped')
+                        setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+                    } else if(e.target.classList.value.includes('content')) {
+                        e.target.classList.add('flipped')
+                        setTimeout(()=>e.target.classList.add('done'), 600)
+                    }
                 }
             }
         )
@@ -170,7 +162,7 @@ class MyTag extends Slim {
         Slim.tag(
             'my-error',
             `<div class='error'>
-                <h2>There was a problem fetching the cards. Attempting Contignency fetch.</h2>
+                <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
                 <h5>{{this.error}}</h5>
             </div>`,
             class MyError extends Slim {

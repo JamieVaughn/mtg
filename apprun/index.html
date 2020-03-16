@@ -6,18 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="icon" href="../img/favicon.png">
     <link rel="stylesheet" href="../css/mtg.css">
-    <title>Magic the Gathering Booster Pack Viewer - Lit Element</title>
+    <title>Magic the Gathering Booster Pack Viewer - App Run</title>
 </head>
 <body>
     <!-- https://lit-html.polymer-project.org/guide/writing-templates -->
     <header>
-        <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 160"><style>.st0{fill:#fff}.st1{opacity:.8}.st1,.st2,.st3{fill:#f52757}.st2{opacity:.7}.st3{opacity:.6}.st4{opacity:.68;fill:#1e88e5}.st5{opacity:.76}.st5,.st6,.st7{fill:#1e88e5}.st6{opacity:.84}.st7{opacity:.94}.st8{opacity:.65}.st8,.st9{fill:#f52757}.st10{fill:#1e88e5}.st11{opacity:.92}.st11,.st12{fill:#0d47a1}</style><path class="st0" d="M93.1 4.3H49.4L5.7 80l43.7 75.7h43.7l65.6-113.6L180.6 80l-43.7 75.7h43.7L224.3 80 180.6 4.3h-43.7L71.3 117.9 49.4 80z"/><path class="st1" d="M115 42.1l21.8-37.8 21.9 37.8z"/><path class="st2" d="M115 42.1L136.8 80l21.9-37.9z"/><path class="st3" d="M93.1 80L115 42.1 136.8 80z"/><path class="st4" d="M49.4 4.3l21.9 37.8L93.1 4.3z"/><path class="st5" d="M27.6 42.1L49.4 4.3l21.9 37.8z"/><path class="st6" d="M27.6 42.1L49.4 80l21.9-37.9z"/><path class="st7" d="M5.7 80l21.9-37.9L49.4 80z"/><path class="st8" d="M93.1 80l21.9 37.9L136.8 80z"/><path class="st2" d="M71.3 117.9L93.1 80l21.9 37.9z"/><path class="st1" d="M71.3 117.9l21.8 37.8 21.9-37.8z"/><path class="st9" d="M49.4 155.7l21.9-37.8 21.8 37.8z"/><path class="st10" d="M5.7 80l21.9 37.9L49.4 80z"/><path class="st4" d="M180.6 155.7l-21.9-37.8-21.8 37.8z"/><path class="st5" d="M202.4 117.9l-21.8 37.8-21.9-37.8z"/><path class="st6" d="M202.4 117.9L180.6 80l-21.9 37.9z"/><path class="st7" d="M224.3 80l-21.9 37.9L180.6 80z"/><path class="st10" d="M224.3 80l-21.9-37.9L180.6 80z"/><path class="st11" d="M71.3 117.9L49.4 80l-21.8 37.9z"/><path class="st12" d="M71.3 117.9l-21.9 37.8-21.8-37.8z"/><path class="st9" d="M136.8 4.3l21.9 37.8 21.9-37.8z"/><path class="st12" d="M202.4 42.1L180.6 4.3l-21.9 37.8z"/><path class="st11" d="M202.4 42.1L180.6 80l-21.9-37.9z"/></svg>
-        <h2>An experiment with (222kB) LitElement class-based web component library for simple data hydration tasks</h2>
+        <img style="width:100px;height:auto;" src="https://github.com/yysun/apprun/blob/master/logo.png?raw=true">
+        <h2>An experiment with (586kB) AppRun templating library for simple data hydration tasks</h2>
     </header>
     <my-cards></my-cards>
     <script type='module'>
-        //  https://lit-html.polymer-project.org/guide
-        import { LitElement, html, css } from 'https://unpkg.com/lit-element?module';    
+        //  https://github.com/yysun/apprun
+        import { app, Component, html } from 'https://unpkg.com/apprun@next/esm/apprun-html?module';
+   
 
         var setCodes;
 
@@ -26,13 +27,8 @@
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
                             </svg>`
                             
-        class MyHeader extends LitElement {
-            createRenderRoot() {
-                return this // removes the shadow root so global css works
-            }
-            render(){
-                return html`<h1>MTG: Booster Pack Showcase</h1>`
-            }
+        class MyHeader extends Component {
+            view = () => html`<h1>MTG: Booster Pack Showcase</h1>`
         }
         const handleHover = {
             handleEvent(e){
@@ -58,20 +54,15 @@
             },
             capture: true
         }
-        class MyCards extends LitElement {
-            static get properties() {
-                return {
-                response: { type: Array },
-                error: { type: String }
-                };
+        class MyCards extends Component {
+            state = {
+                response: [],
+                error: false
             }
-            constructor(){
-                super()
-                this.response = [];
-                this.error = false;
-            }
-            firstUpdated(changedProperties){
-                this.response = [];
+            
+            rendered = (props, children, state) => {
+                console.log(props, children, state)
+                props.response = [];
                   // https://api.magicthegathering.io/v1/sets/<setCode>/booster
                 fetch('../json/setcodes.json')
                 .then(resp => {
@@ -87,24 +78,19 @@
                         if(resp.ok) return resp.json()
                         console.log(set)
                         fetch(`https://api.magicthegathering.io/v1/sets/CON/booster`)
-                        .then(r=>r.json()).then(d=>this.response = d.cards)
+                        .then(r=>r.json()).then(d=>state.response = d.cards)
                     })
                     .then(data => {
-                        this.response =  data.cards
-                        console.log(this.response)
-                        console.log(changedProperties)
+                        state.response =  data.cards
+                        console.log(state.response)
+                        console.log(props)
                     })
-                    .catch(err => this.error = err)
+                    .catch(err => state.error = err)
                 })
             }
-            createRenderRoot() {
-                return this // removes the shadow root so global css works
-            }
-            render(){
-                const {response} = this;
-                return response.length ? html`
+            view = ({response, error}) => response.length ? html`
                 <div>
-                    <my-header @click=${this.firstUpdated}></my-header>
+                    <my-header @click=${rendered}></my-header>
                     <div class='showcase'>
                         ${response.map(c => html`<div class='card' @mouseover=${handleHover} @dblclick=${handleDblClick}>
                         <div class='content'>
@@ -137,58 +123,34 @@
                     </div>
                 </div>
                 ` 
-                : this.error ? html`<my-error error='${this.error}></my-error>` 
+                : error ? html`<my-error error='${error}></my-error>` 
                 : html`<my-loader></my-loader>`;
-            }
+            
         }
-        class MyLoader extends LitElement {
-            createRenderRoot() {
-                return this // removes the shadow root so global css works
-            }
-            render(){
-                return html`
+
+        class MyLoader extends Component {
+            view = () => html`
                 <div class='loading'>
                     <h2>Fetching Magic Cards.</h3>
                     <h6>(This API is rather slow...)</h6>
                     ${spinner}
                 </div>
                 `
-            }
         }
-        class MyError extends LitElement {
-            constructor(){
-                super()
-            }
-            createRenderRoot() {
-                return this // removes the shadow root so global css works
-            }
-            render(){
-                return html`
+
+        class MyError extends Component {
+            view = error => html`
                     <div class='error'>
                         <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
-                        <h5>${this.error}</h5>
+                        <h5>${error}</h5>
                     </div>
                 `
-            }
         }
         
-        class RenderMana extends LitElement {
-            static get properties(){
-                return {
-                    mana: {type: String}
-                }
-            }
-            constructor(){
-                super()
-                this.mana = ''
-            }
-            createRenderRoot() {
-                return this // removes the shadow root so global css works
-            }
-            render(){
-                // console.log(this.mana)
-                return html`
-                    ${this.mana
+        class RenderMana extends Component {
+            mana = ''
+            view = (mana) => html`
+                    ${mana
                         .split(/[\{\}]+/)
                         .filter(i => i.length)
                         .map(m => m.length === 1 && m.match(/[BRUGWXETC0-9]/)? html`
@@ -198,14 +160,13 @@
                         ` : html`${m}`)
                     }
                 `
-            }
         }
 
-        customElements.define('my-header', MyHeader)
-        customElements.define('my-cards', MyCards)
-        customElements.define('my-loader', MyLoader)
-        customElements.define('my-error', MyError)
-        customElements.define('render-mana', RenderMana)
+        app.webComponent('my-header', MyHeader)
+        app.webComponent('my-cards', MyCards)
+        app.webComponent('my-loader', MyLoader)
+        app.webComponent('my-error', MyError)
+        app.webComponent('render-mana', RenderMana)
     </script>
 </body>
 </html>
