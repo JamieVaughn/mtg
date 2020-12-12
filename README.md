@@ -2,7 +2,7 @@
 
 ## Experiments with various modern, lightweight, templating libraries to render Magic the Gathering cards
 
-This project is a way to take inventory of the best, lightweight, web templating tools available today. I'm ignoring the larger frameworks like React, Vue, Angular. I'm only considering small (<1.4MB), client-side packages that are concerned with templating and hydrating the DOM with data and have a minimal event handling integration. I also avoided libraries with any kind of build step or compilation step (with the exception of MoonJS - since its complier was so small).
+This project is a way to take inventory of the best, lightweight, web templating tools available today. I'm ignoring the larger frameworks like React, Vue, Angular. I'm only considering small (<1.4MB), client-side packages that are concerned with templating and hydrating the DOM with data and have a minimal event handling integration. I also avoided libraries with any kind of build step or compilation step (Some of these could use babel + JSX, but I didn't use that for this project).
 
 In 2018 - 2019, I used Handlebars to create a customer support application embedded in Zendesk that accepted a search query and would GET customer profiles from a database as a reference for an agent fielding support calls. Some buttons could POST small updates to the customer profile as well. It worked fine, but I soon regretted the Handlebars choice as I learned about the emerging templating tools building on the tagged template string concept that would have been a better fit for the task... and in a smaller bundle size to boot! 
 
@@ -16,9 +16,11 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 * SlimJS [demo](https://wjv.io/mtg/slim) (Not all features implemented)
 * AppRun [demo](https://wjv.io/mtg/apprun) https://github.com/yysun/apprun
 * In progress:
-* Moon [demo](https://wjv.io/mtg/moon)
 * Inferno [demo](https://wjv.io/mtg/inferno)
 * Cycle [demo](https://wjv.io/mtg/cycle) https://cycle.js.org/
+* [Neow](https://github.com/neo-web/neow) https://webcomponents.dev/edit/fEa6HG5aeEwJ75vqDVyj
+* [Ottavino](https://github.com/betterthancode/ottavino) https://webcomponents.dev/edit/RA7SjhwlA7S18lZy9kkL
+
 
 ### My opinion on each library for small scale data templating purposes:
  
@@ -27,16 +29,18 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 | Handlebars*   | ★☆☆☆☆ | 2.2MB | 21.7kB | Template bindings | Heavily Restricted Template Logic, DSL***, No Shadow DOM or Modules |
 | Lit HTMl      | ★★★☆☆ | 519kB | 3.5kB | Flexible, Composability, Modules | HTML strings, No Shadow DOM |
 | Lit Element   | ★★★★☆ | 222kB | 6.9kB | Web Components**, Stateful | Verbose Syntax, HTML Strings |
-| Preact        | ★★★★☆ | 704kB | 4kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib |
+| Preact        | ★★★★★ | 704kB | 4kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib |
 | HauntedJS     | ★★★★★ | 74.6kB + 519kB | 5.4kB | "Hooks for Web Components" | Lacks Custom Methods, Manual Props, Dependency: Lit-HTML |
+| AppRun        | ★★★★★★! | 586kB | 4.5kB | Pub-Sub/Elm architecture, custom events/routing/testing included, Web Components, CLI tooling, progressive enhancement (JSX, redux, typescript, dev tooling) | I didn't notice any 😲 |
+| SolidJS       | ★★★★★ | 21.1kB | 7.3kB | Hooks, no V-DOM, Declarative, small/fast, typescript, Web components| small community |
 | SlimJS        | ★★☆☆☆ | 5kB   | 2.7kB | Web Components, Minimalist | Difficult to use, Documentation is lacking, No Functional Components, DSL***: Conditional logic, Binding syntax |
 | In progress:       |  |  |  |  |  |
-| AppRun        | ★★★☆☆ | 586kB | 4.5kB | Elm architecture | |
-| StimulusJS       | ★★★☆☆ | 1.3MB | 4.6kB | FRP****| |
-| CycleJS       | ★★★☆☆ | 1.3MB | 4.6kB | FRP****| |
-| Moon          | ★★☆☆☆ | 376kB + 29kB | 2.6kB | JSX-like    | 29kB compiler, DSL: Drivers, No SVG support |
-| Inferno       | ★★★☆☆ | 672kB | 20kB |  |  |
-| AlpineJS       | ★★★☆☆ |  |  | Closest to VanillaJS| |
+| StimulusJS       | ★★★☆☆? | 1.3MB | 4.6kB | FRP****| |
+| CycleJS       | ★★★☆☆? | 1.3MB | 4.6kB | FRP****| |
+| Inferno       | ★★★☆☆? | 672kB | 20kB |  |  |
+| AlpineJS       | ★★★☆☆? |  |  | Closest to VanillaJS| |
+| Neow       | ★★★☆☆? | 4.2kB | 1.9kB | Tiny, Declarative, Web Components | |
+| Ottavino      | ★★★☆☆? |  4kB | 1.8kB | As small as it gets, Object Constructor, Web components| |
 
 
 ###### <sup>†</sup> These appealing libraries were also considered, but were over the size limit: [RiotJS](https://www.npmjs.com/package/riot), Marko, SkateJS
@@ -47,7 +51,7 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 ###### ****FRP -> Functional Reactive Programming
 
 
-#### I did not anticipate when embarking on this, how interesting and difficult of a challenge it is in rendering libraries to strike a balance between relying on the native browser/DOM APIs, which saves kBs, and/or implementing new rendering paradigms (Functional Reactive, Drivers, Declarative Style, Hooks, State), which costs additional kBs and sometimes requires compilers.
+#### I did not anticipate when embarking on this, how interesting and difficult of a challenge it is in rendering libraries to strike a balance between relying on the native browser/DOM APIs, which saves kBs, and/or implementing new rendering paradigms (Functional Reactive, Declarative Style, Hooks, State), which costs additional kBs and sometimes requires compilers.
 
 ### A screenshot of the benchmark App:
 ![App Screenshot](/img/demo.png)

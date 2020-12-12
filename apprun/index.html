@@ -13,15 +13,17 @@
     <header>
         <img style="width:100px;height:auto;" src="https://github.com/yysun/apprun/blob/master/logo.png?raw=true">
         <h2>An experiment with (586kB) AppRun templating library for simple data hydration tasks</h2>
+        <my-app id='counter'></my-app>
     </header>
-    <my-cards></my-cards>
+    <my-cards id='my-cards'></my-cards>
     <script type='module'>
         //  https://github.com/yysun/apprun
         import { app, Component, html } from 'https://unpkg.com/apprun@next/esm/apprun-html?module';
    
 
         var setCodes;
-
+        var sets = ["2ED", "3ED", "4ED", "5DN", "5ED", "6ED", "AER", "AKH", "ALA", "ALL", "APC", "ARB", "AVR", "BBD", "BFZ", "BNG", "BOK", "CHK", "CHR", "CN2", "CNS", "CON", "CSP", "DGM", "DIS", "DOM", "DST", "DTK", "ELD", "EVE", "EXO"]
+        
         const spinner = html`<svg width='50px' height='50px' viewBox='0 0 50 50'>
                                 <circle fill="none" stroke="dodgerblue" stroke-width="4"  stroke-dasharray="45,40" cx="25" cy="25" r="15"/>
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
@@ -30,20 +32,8 @@
         class MyHeader extends Component {
             view = () => html`<h1>MTG: Booster Pack Showcase</h1>`
         }
-        const handleHover = {
-            handleEvent(e){
-                // console.log(e.target)
-                if(e.target.classList.value.includes('back')) {
-                    e.target.offsetParent.classList.add('flipped')
-                    setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
-                } else if(e.target.classList.value.includes('content')) {
-                    e.target.classList.add('flipped')
-                    setTimeout(()=>e.target.classList.add('done'), 600)
-                }
-            },
-            once: true
-        }
-        const handleDblClick = {
+        
+        const handleDblClicka = {
             handleEvent(e){
                 let cardClasses = e.currentTarget.classList
                 if(cardClasses.value.includes('lightbox')) {
@@ -54,39 +44,42 @@
             },
             capture: true
         }
+        const getCards = async state => {
+            console.log(state)
+            state.response = [];
+                // https://api.magicthegathering.io/v1/sets/<setCode>/booster
+            try {
+                // const resp = await fetch('../json/setcodes.json')
+                // const data = await resp.json()
+                // setCodes = await data.setCodes
+                // const set = await data.setCodes[Math.floor(Math.random()*data.setCodes.length)]
+                let code = sets[Math.floor(Math.random()*data.setCodes.length)]
+                const nextResp = await fetch(`https://api.magicthegathering.io/v1/sets/${code}/booster`)
+                const nextData = await resp.json()
+                state.response =  await nextData.cards
+                console.log(state.response)
+                return state
+            } catch(err){
+                const backup = await fetch(`https://api.magicthegathering.io/v1/sets/CON/booster`)
+                if(backup.ok) {
+                    const backupData = backup.json()
+                    state.response = backupData.cards
+                    return state
+                } else {
+                    state.error = err
+                    return state
+                }
+            }
+        }
+
         class MyCards extends Component {
             state = {
                 response: [],
                 error: false
             }
-            
-            rendered = (props, children, state) => {
+            mounted = (props, children, state) => {
                 console.log(props, children, state)
-                props.response = [];
-                  // https://api.magicthegathering.io/v1/sets/<setCode>/booster
-                fetch('../json/setcodes.json')
-                .then(resp => {
-                    return resp.json()
-                })
-                .then(data => {
-                    setCodes = data.setCodes
-                    return data.setCodes[Math.floor(Math.random()*data.setCodes.length)]
-                })
-                .then(set => {
-                    fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
-                    .then(resp => {
-                        if(resp.ok) return resp.json()
-                        console.log(set)
-                        fetch(`https://api.magicthegathering.io/v1/sets/CON/booster`)
-                        .then(r=>r.json()).then(d=>state.response = d.cards)
-                    })
-                    .then(data => {
-                        state.response =  data.cards
-                        console.log(state.response)
-                        console.log(props)
-                    })
-                    .catch(err => state.error = err)
-                })
+                state = getCards(state)
             }
             view = ({response, error}) => response.length ? html`
                 <div>
@@ -124,8 +117,22 @@
                 </div>
                 ` 
                 : error ? html`<my-error error='${error}></my-error>` 
-                : html`<my-loader></my-loader>`;
-            
+                : html`<my-loader onclick='app.run("inspect(state)")'></my-loader>`;
+            update = {
+                "getCards": async state => getCards(state),
+                "handleHover": event => e => state => {
+                    console.log(event, e, state)
+                    // if(e.target.classList.value.includes('back')) {
+                    //     e.target.offsetParent.classList.add('flipped')
+                    //     setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+                    // } else if(e.target.classList.value.includes('content')) {
+                    //     e.target.classList.add('flipped')
+                    //     setTimeout(()=>e.target.classList.add('done'), 600)
+                    // }
+                },
+                "handleDblClick": state => console.log(state),
+                "inspect": state => console.log(state)
+            }
         }
 
         class MyLoader extends Component {
@@ -167,6 +174,31 @@
         app.webComponent('my-loader', MyLoader)
         app.webComponent('my-error', MyError)
         app.webComponent('render-mana', RenderMana)
+
+        
+
+        class Counter extends Component {
+            constructor() {
+                super();
+                this.state = {
+                    count: 0,
+                    text: ''
+                }
+                this.view = state => `<div>
+                    <h1>${state.count}</h1>
+                    <h1>${state.text}</h1>
+                    <button onclick='counter.run("-")'>-</button>
+                    <button onclick='counter.run("+")'>+</button>
+                    <input id='input' onkeydown='counter.run("update")' />
+                    </div>`;
+                this.update = {
+                    '+': state => state.count + 1,
+                    '-': state => state.count - 1,
+                    // 'update': state =>  state.text += document.getElementById('input').value
+                }
+            }
+        }
+        app.webComponent('my-app', Counter);
     </script>
 </body>
 </html>

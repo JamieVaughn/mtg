@@ -38,6 +38,7 @@
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
                             </svg>`
         const myHeader = (props) => html`<h1 class='refresh' @click=${props.click}>MTG: Booster Pack Showcase</h1>`
+        
         function myCards(props) {
             const [codes, setCodes] = useState([])
             const [code, setCode] = useState('CON')
