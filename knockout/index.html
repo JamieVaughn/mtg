@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="../img/favicon.png">
+    <link rel="stylesheet" href="../css/mtg.css">
+    <title>Magic the Gathering Booster Pack Viewer - Knockout</title>
+    <script type='text/javascript' src='https://knockoutjs.com/downloads/knockout-3.5.1.js'></script>
+
+</head>
+<body>
+    <header>
+        <img src='https://knockoutjs.com/img/ko-logo.png' class='lib-logo'/>
+        <h2>An experiment with (519kB) KnockoutJS templating library for simple data hydration tasks</h2>
+    </header>
+    <div id="title">
+        <h1 class='refresh' data-bind='event: { click: fetchNew}'>MTG: Booster Pack Showcase</h1>
+    </div>
+    <div id="knockout">
+
+        <div class='loading' data-bind="visible: loading">
+            <h2>Fetching Magic Cards.</h3>
+            <h6>(This API is rather slow...)</h6>
+            <svg width='50px' height='50px' viewBox='0 0 50 50'>
+                <circle fill="none" stroke="dodgerblue" stroke-width="4"  stroke-dasharray="45,40" cx="25" cy="25" r="15"/>
+                <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
+            </svg>
+        </div>
+
+        <div class='error' data-bind="visible: error">
+            <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
+            <h5 data-bind='error'></h5>
+        </div>
+
+        <div class='showcase' data-bind='hidden: loading || error, foreach: cards'> <!-- cards Wrapper -->
+            <!-- each card: -->
+            <div class='card' data-bind="event: { mouseover: $parent.handleHover}">
+                <div class='content'>
+                    <img src='../img/card_back.jpeg' class='back'/>
+                    <article data-bind="attr: {title: cardTitle}" class='front'>
+                        <div data-bind="class: classString">
+                            <header>
+                                <span class='name' data-bind="attr: {title: cardName}, text: cardName"></span>
+                                <span class='cost' data-bind="html: manaString"></span>
+                            </header>
+                            <img
+                            class='magic portrait'
+                            data-bind="attr: {src: portrait}" />
+                            <h3>
+                                <span class='type' data-bind="attr: {title: cardType}, text: type"></span>
+                            </h3>
+                            <div data-bind="class: flavorClass, html: flavorTxt"></div>
+                            <footer class='footnote'>
+                                <span class='illus' data-bind="attr: {title: artist}, text: illustrator"></span>
+                                <span class='p-t' data-bind="text: powerToughness"></span>
+                            </footer>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type='module'> 
+
+        const title = document.querySelector('#title')
+        const knockout = document.querySelector('#knockout')
+
+        function fetchNew () {
+            console.log(viewModel)
+            getBooster(sets[Math.floor(Math.random()*sets.length)])
+        }
+
+        function handleHover(data, event) {
+            let e = event
+            console.log(e.target)
+            if(e.target.classList.value.includes('back')) {
+                e.target.offsetParent.classList.add('flipped')
+                setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+            } else if(e.target.classList.value.includes('content')) {
+                e.target.classList.add('flipped')
+                setTimeout(()=>e.target.classList.add('done'), 600)
+            }
+        }
+
+        // Initialize Knockout ViewModel
+        var viewModel = {
+            loading: ko.observable(true),
+            error: ko.observable(false),
+            cards: ko.observableArray([]),
+            handleHover: handleHover,
+            fetchNew: fetchNew
+        }
+        ko.applyBindings(viewModel)
+
+        // Fetch card data from https://api.magicthegathering.io/v1/sets/<setCode>/booster
+        // var setCodes;
+        // fetch('../json/setcodes.json')
+        //     .then(resp => console.log(resp), resp.json())
+        //     .then(data => console.log(data), setCodes = data.setCodes, data.setCodes[Math.floor(Math.random()*data.setCodes.length)])
+        //     .then(code => getBooster(code))
+        var sets = ["2ED", "3ED", "4ED", "5DN", "5ED", "6ED", "AER", "AKH", "ALA", "ALL", "APC", "ARB", "AVR", "BBD", "BFZ", "BNG", "BOK", "CHK", "CHR", "CN2", "CNS", "CON", "CSP", "DGM", "DIS", "DOM", "DST", "DTK", "ELD", "EVE", "EXO"]
+        getBooster(sets[Math.floor(Math.random()*sets.length)])
+
+        function getBooster(set) {
+            fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
+            .then(resp => {
+                if(resp.ok) {
+                    viewModel.error(false)
+                    return resp.json()
+                }
+                viewModel.error(true)
+                getBooster('CON')
+            })
+            .then(data => {
+                console.log(data.cards)
+                // assign cards array to view model
+                // viewModel.cards = data.cards
+                let newCards = transformCards(data.cards)
+                // bind view model to observable array
+                viewModel.cards(newCards)
+                viewModel.loading(false)
+                viewModel.error(false)
+                console.log('state', viewModel.cards(), viewModel.loading(), viewModel.error(), viewModel.handleHover())
+            }).catch(err => {
+                console.error('There was an error parsing the code or fetching the card data. ' + err)
+            })
+        }
+        
+        
+        const renderMana = (mana) => `
+            ${mana
+                .split(/[\{\}]+/)
+                .filter(i => i.length)
+                .map(m => m.length === 1 && m.match(/[BRUGWXETC0-9]/) 
+                ? `<span class='mana ${m.match(/[BRUGW]/) ? 'color' : 'colorless'} ${m}'>
+                        ${m.match(/[BRUGW]/) ? '' : m}
+                    </span>` 
+                : `${m}`)
+            }
+        `
+
+        function transformCards (cards) {
+
+            let props = cards.map(c => ({
+                ...c,
+                cardTitle: `Card Set: ${c.setName}`,
+                classString: `${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}`,
+                cardName: `${c.name}`,
+                manaString: `${c.manaCost ? renderMana(c.manaCost) : ''}`,
+                portrait: `${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'}`,
+                cardType: `Type: ${c.type}`,
+                flavorClass: `card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}`,
+                flavorTxt: `<span>${c.text ? c.text && c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}</span>`,
+                illustrator: `Illus. @ ${c.artist}`,
+                powerToughness: `${c.types.includes('Creature') ? c.power + ' / ' + c.toughness : ''}`
+            }))
+            console.log(props)
+            return props
+        }
+
+        
+
+        // Possible path to improve would be using the knockout component model: https://knockoutjs.com/documentation/component-binding.html
+        
+    </script>
+</body>
+</html>

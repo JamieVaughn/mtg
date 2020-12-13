@@ -13,9 +13,9 @@
     <header>
         <img style="width:100px;height:auto;" src="https://github.com/yysun/apprun/blob/master/logo.png?raw=true">
         <h2>An experiment with (586kB) AppRun templating library for simple data hydration tasks</h2>
-        <my-app id='counter'></my-app>
     </header>
     <my-cards id='my-cards'></my-cards>
+    <wc-lit-html></wc-lit-html>
     <script type='module'>
         //  https://github.com/yysun/apprun
         import { app, Component, html } from 'https://unpkg.com/apprun@next/esm/apprun-html?module';
@@ -30,10 +30,13 @@
                             </svg>`
                             
         class MyHeader extends Component {
-            view = () => html`<h1>MTG: Booster Pack Showcase</h1>`
+            constructor() {
+                super()
+                this.view = () => html`<h1>MTG: Booster Pack Showcase</h1>`
+            }
         }
         
-        const handleDblClicka = {
+        const handleDblClick = {
             handleEvent(e){
                 let cardClasses = e.currentTarget.classList
                 if(cardClasses.value.includes('lightbox')) {
@@ -46,14 +49,13 @@
         }
         const getCards = async state => {
             console.log(state)
-            state.response = [];
                 // https://api.magicthegathering.io/v1/sets/<setCode>/booster
             try {
                 // const resp = await fetch('../json/setcodes.json')
                 // const data = await resp.json()
                 // setCodes = await data.setCodes
                 // const set = await data.setCodes[Math.floor(Math.random()*data.setCodes.length)]
-                let code = sets[Math.floor(Math.random()*data.setCodes.length)]
+                let code = sets[Math.floor(Math.random()*codes.length)]
                 const nextResp = await fetch(`https://api.magicthegathering.io/v1/sets/${code}/booster`)
                 const nextData = await resp.json()
                 state.response =  await nextData.cards
@@ -73,90 +75,130 @@
         }
 
         class MyCards extends Component {
-            state = {
-                response: [],
-                error: false
-            }
-            mounted = (props, children, state) => {
-                console.log(props, children, state)
-                state = getCards(state)
-            }
-            view = ({response, error}) => response.length ? html`
-                <div>
-                    <my-header @click=${rendered}></my-header>
-                    <div class='showcase'>
-                        ${response.map(c => html`<div class='card' @mouseover=${handleHover} @dblclick=${handleDblClick}>
-                        <div class='content'>
-                            <img src='../img/card_back.jpeg' class='back'/>
-                            <article title='Card Set: ${c.setName}' class='front'>
-                                <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
-                                    <header>
-                                        <span class='name' title='${c.name}'>${c.name}</span>
-                                        <span class='cost'>${c.manaCost ? html`<render-mana mana='${c.manaCost}'></render-mana>` : ''}</span>
-                                    </header>
-                                    <img
-                                    class='magic portrait'
-                                    src=${c.imageUrl ? 
-                                        c.imageUrl : 
-                                        'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'} />
-                                    <h3>
-                                        <span class='type' title='Type: ${c.type}'>${c.type}</span>
-                                    </h3>
-                                    <div class='card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}'>
-                                        ${c.text ? c.text && c.text.match(/[\{\}]+/) ? html`<render-mana mana='${c.text}'></render-mana>` : c.text : c.flavor}
+            constructor() {
+                super();
+                this.state = {
+                    response: [],
+                    error: false
+                }
+                this.mounted = (props, children, state) => {
+                    console.log(props, state)
+                    // state.response = getCards(state)
+                    async state => {
+                        console.log(state)
+                        try {
+                            const nextResp = await fetch(`https://api.magicthegathering.io/v1/sets/${sets[Math.floor(Math.random()*codes.length)]}/booster`)
+                            const cards = await resp.json()
+                            constole.log(cards)
+                            state = { 
+                                error: false,
+                                response: await cards 
+                            }
+                            this.state = state
+                            
+                            console.log(await state, await this.state)
+                            return this.state
+                        } catch(err) {
+                            this.state = {
+                                error: true,
+                                response: []
+                            }
+                            return this.state
+                        }
+                    }
+                }
+                this.view = (state) => {
+                    console.log(state)
+                    const {response, error} = state
+                    return response.length ? html`
+                    <div>
+                        <my-header @click=${rendered}></my-header>
+                        <div class='showcase'>
+                            ${response.map(c => html`<div class='card' @mouseover=${this.run('handleHover')} @dblclick=${this.run('handleDblClick')}>
+                            <div class='content'>
+                                <img src='../img/card_back.jpeg' class='back'/>
+                                <article title='Card Set: ${c.setName}' class='front'>
+                                    <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                                        <header>
+                                            <span class='name' title='${c.name}'>${c.name}</span>
+                                            <span class='cost'>${c.manaCost ? html`<render-mana mana='${c.manaCost}'></render-mana>` : ''}</span>
+                                        </header>
+                                        <img
+                                        class='magic portrait'
+                                        src=${c.imageUrl ? 
+                                            c.imageUrl : 
+                                            'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'} />
+                                        <h3>
+                                            <span class='type' title='Type: ${c.type}'>${c.type}</span>
+                                        </h3>
+                                        <div class='card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}'>
+                                            ${c.text ? c.text && c.text.match(/[\{\}]+/) ? html`<render-mana mana='${c.text}'></render-mana>` : c.text : c.flavor}
+                                        </div>
+                                        <footer class='footnote'>
+                                            <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
+                                            <span class='p-t'>${c.types.includes('Creature') ? c.power + ' / ' + c.toughness : ''}</span>
+                                        </footer>
                                     </div>
-                                    <footer class='footnote'>
-                                        <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
-                                        <span class='p-t'>${c.types.includes('Creature') ? c.power + ' / ' + c.toughness : ''}</span>
-                                    </footer>
-                                </div>
-                            </article>
+                                </article>
+                            </div>
+                            </div>`)}
                         </div>
-                        </div>`)}
                     </div>
-                </div>
-                ` 
-                : error ? html`<my-error error='${error}></my-error>` 
-                : html`<my-loader onclick='app.run("inspect(state)")'></my-loader>`;
-            update = {
-                "getCards": async state => getCards(state),
-                "handleHover": event => e => state => {
-                    console.log(event, e, state)
-                    // if(e.target.classList.value.includes('back')) {
-                    //     e.target.offsetParent.classList.add('flipped')
-                    //     setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
-                    // } else if(e.target.classList.value.includes('content')) {
-                    //     e.target.classList.add('flipped')
-                    //     setTimeout(()=>e.target.classList.add('done'), 600)
-                    // }
-                },
-                "handleDblClick": state => console.log(state),
-                "inspect": state => console.log(state)
+                    ` 
+                    : error ? html`<my-error error='${error}'></my-error>` 
+                    : html`<my-loader onclick='${() => this.run("inspect")}'></my-loader>`;
+                }
+                this.update = {
+                    getCards: async state => getCards(state),
+                    loading: (state, loading) => ({ ...state, loading }),
+                    handleHover: event => e => state => {
+                        console.log(event, e, state)
+                        // if(e.target.classList.value.includes('back')) {
+                        //     e.target.offsetParent.classList.add('flipped')
+                        //     setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+                        // } else if(e.target.classList.value.includes('content')) {
+                        //     e.target.classList.add('flipped')
+                        //     setTimeout(()=>e.target.classList.add('done'), 600)
+                        // }
+                    },
+                    handleDblClick: state => console.log(state),
+                    inspect: state => console.log('inspect', state)
+                }
             }
         }
 
         class MyLoader extends Component {
-            view = () => html`
+            constructor() {
+                super()
+                this.view = () => html`
                 <div class='loading'>
                     <h2>Fetching Magic Cards.</h3>
                     <h6>(This API is rather slow...)</h6>
                     ${spinner}
                 </div>
                 `
+            }
+            
         }
 
         class MyError extends Component {
-            view = error => html`
+            constructor() {
+                super()
+                this.view = error => html`
                     <div class='error'>
                         <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
                         <h5>${error}</h5>
                     </div>
                 `
+            }
+            
         }
         
         class RenderMana extends Component {
-            mana = ''
-            view = (mana) => html`
+            constructor() {
+                super()
+                this.mana = ''
+                this.view = (mana) => html`
                     ${mana
                         .split(/[\{\}]+/)
                         .filter(i => i.length)
@@ -167,6 +209,8 @@
                         ` : html`${m}`)
                     }
                 `
+            }
+            
         }
 
         app.webComponent('my-header', MyHeader)
@@ -179,26 +223,39 @@
 
         class Counter extends Component {
             constructor() {
-                super();
+                super()
+                this.app = this
                 this.state = {
                     count: 0,
-                    text: ''
-                }
-                this.view = state => `<div>
-                    <h1>${state.count}</h1>
-                    <h1>${state.text}</h1>
-                    <button onclick='counter.run("-")'>-</button>
-                    <button onclick='counter.run("+")'>+</button>
-                    <input id='input' onkeydown='counter.run("update")' />
-                    </div>`;
+                    title: '',
+                    loading: false
+                };
+                // mounted = async () => await fetch('https://jsonplaceholder.typicode.com/users/1')
+                //                         .then(response => response.json())
+                //                         .then(json => this.run('title', json.name))
+                this.view = (state) => state.loading ? MyLoader : html`<div>
+                    <h1 @click=${() => this.run('onfetch')}>${state.title}: ${state.count}</h1>
+                    <button @click=${()=>this.run("add", -1)}>-1</button>
+                    <button @click=${()=>this.run("add", +1)}>+1</button>
+                </div>`;
                 this.update = {
-                    '+': state => state.count + 1,
-                    '-': state => state.count - 1,
-                    // 'update': state =>  state.text += document.getElementById('input').value
+                    add: (state, n) => ({count: state.count + n, ...state}),
+                    title: (state, title) => ({...state, title}),
+                    onfetch: async state => {
+                        console.log(state)
+                        app.run('loading', true);
+                        const response = await fetch(`https://jsonplaceholder.typicode.com/users/${Math.floor(Math.random()*10)}`);
+                        const data = await response.json();
+                        const title = await data.name
+                        app.run('loading', false)
+                        console.log({...state, title})
+                        return {...state, title};
+                    },
+                    loading: state => ({loading, ...state})
                 }
             }
         }
-        app.webComponent('my-app', Counter);
+        app.webComponent('wc-lit-html', Counter);
     </script>
 </body>
 </html>

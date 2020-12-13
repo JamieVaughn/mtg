@@ -14,12 +14,15 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 * Preact [demo](https://wjv.io/mtg/preact)
 * HauntedJS [demo](https://wjv.io/mtg/haunted)
 * SlimJS [demo](https://wjv.io/mtg/slim) (Not all features implemented)
-* AppRun [demo](https://wjv.io/mtg/apprun) https://github.com/yysun/apprun
+* SolidJS [demo](https://wjv.io/mtg/solid) (Only returns raw JSON so far)
+* KnockoutJS [demo](https://wjv.io/mtg/knockout) (The OG framework that started it all in 2010)
 * In progress:
-* Inferno [demo](https://wjv.io/mtg/inferno)
+* AppRun [demo](https://wjv.io/mtg/apprun) https://github.com/yysun/apprun
 * Cycle [demo](https://wjv.io/mtg/cycle) https://cycle.js.org/
-* [Neow](https://github.com/neo-web/neow) https://webcomponents.dev/edit/fEa6HG5aeEwJ75vqDVyj
+* [Stimulus](https://stimulusjs.org/)
+* Inferno [demo](https://wjv.io/mtg/inferno)
 * [Ottavino](https://github.com/betterthancode/ottavino) https://webcomponents.dev/edit/RA7SjhwlA7S18lZy9kkL
+* [Neow](https://github.com/neo-web/neow) https://webcomponents.dev/edit/fEa6HG5aeEwJ75vqDVyj
 
 
 ### My opinion on each library for small scale data templating purposes:
@@ -31,9 +34,10 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 | Lit Element   | ★★★★☆ | 222kB | 6.9kB | Web Components**, Stateful | Verbose Syntax, HTML Strings |
 | Preact        | ★★★★★ | 704kB | 4kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib |
 | HauntedJS     | ★★★★★ | 74.6kB + 519kB | 5.4kB | "Hooks for Web Components" | Lacks Custom Methods, Manual Props, Dependency: Lit-HTML |
-| AppRun        | ★★★★★★! | 586kB | 4.5kB | Pub-Sub/Elm architecture, custom events/routing/testing included, Web Components, CLI tooling, progressive enhancement (JSX, redux, typescript, dev tooling) | I didn't notice any 😲 |
-| SolidJS       | ★★★★★ | 21.1kB | 7.3kB | Hooks, no V-DOM, Declarative, small/fast, typescript, Web components| small community |
+| AppRun        | ★★★★☆ | 586kB | 4.5kB | Pub-Sub/Elm architecture, custom events/routing/testing included, Web Components, CLI tooling, progressive enhancement (JSX, redux, typescript, dev tooling) | Hard to google for help/answers |
+| SolidJS       | ★★★★☆ | 21.1kB | 7.3kB | Hooks, no V-DOM, Declarative, small/fast, typescript, Web components| Proxy Shenanigans, small community |
 | SlimJS        | ★★☆☆☆ | 5kB   | 2.7kB | Web Components, Minimalist | Difficult to use, Documentation is lacking, No Functional Components, DSL***: Conditional logic, Binding syntax |
+| KnockoutJS        | ★★☆☆☆ | 66kB   | 23.7kB | Historically Interesting (c.2010), Started the trend with Observables | Showing its age, No more updates |
 | In progress:       |  |  |  |  |  |
 | StimulusJS       | ★★★☆☆? | 1.3MB | 4.6kB | FRP****| |
 | CycleJS       | ★★★☆☆? | 1.3MB | 4.6kB | FRP****| |
