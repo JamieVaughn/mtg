@@ -17,6 +17,8 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 * SolidJS [demo](https://wjv.io/mtg/solid) (Only returns raw JSON so far)
 * KnockoutJS [demo](https://wjv.io/mtg/knockout) (The OG framework that started it all in 2010)
 * In progress:
+
+* Brahmos [demo](https://wjv.io/mtg/brahmos) https://github.com/brahmosjs/brahmos https://codesandbox.io/s/brahmos-demo-3t8r6?file=/src/concurrent-mode/index.js
 * AppRun [demo](https://wjv.io/mtg/apprun) https://github.com/yysun/apprun
 * Cycle [demo](https://wjv.io/mtg/cycle) https://cycle.js.org/
 * [Stimulus](https://stimulusjs.org/)
