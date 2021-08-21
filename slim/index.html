@@ -135,15 +135,15 @@
                 }
                 onAdded(){
                     this.c.imageUrl = this.c.imageUrl || 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND';
-                    this.colorClass = `${this.c.colors[0] || this.c.colorIdentity[0]} ${this.c.types.join(' ')} ${this.c.text && this.c.text.includes('Devoid') ? 'Devoid' : ''} border ${this.c.rarity}`;
-                    this.isCreature = this.c.types.includes('Creature') ? `${this.c.power} / ${this.c.toughness}` : ''
+                    this.colorClass = `${this.c?.colors?.[0] || this.c?.colorIdentity?.[0]} ${this.c?.types?.join(' ')} ${this.c.text && this.c.text.includes('Devoid') ? 'Devoid' : ''} border ${this.c.rarity}`;
+                    this.isCreature = this.c.types?.includes('Creature') ? `${this.c.power} / ${this.c.toughness}` : ''
                 }
                 handleHover(e) {
                     console.log(e.target)
-                    if(e.target.classList.value.includes('back')) {
+                    if(e.target.classList.value?.includes('back')) {
                         e.target.offsetParent.classList.add('flipped')
                         setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
-                    } else if(e.target.classList.value.includes('content')) {
+                    } else if(e.target.classList.value?.includes('content')) {
                         e.target.classList.add('flipped')
                         setTimeout(()=>e.target.classList.add('done'), 600)
                     }

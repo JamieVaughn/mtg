@@ -118,7 +118,7 @@
                             <div class='content'>
                                 <img src='../img/card_back.jpeg' class='back'/>
                                 <article title='Card Set: ${c.setName}' class='front'>
-                                    <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                                    <div class='${c?.colors?.[0] || c?.colorIdentity?.[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
                                         <header>
                                             <span class='name' title='${c.name}'>${c.name}</span>
                                             <span class='cost'>${c.manaCost ? html`<render-mana mana='${c.manaCost}'></render-mana>` : ''}</span>

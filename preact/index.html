@@ -67,12 +67,12 @@
 
         const Cards = (cards) => html`
         <div class='showcase'>
-            ${cards.map(c => html`
+            ${console.log(cards) || cards.map(c => html`
                 <div class='card' onMouseover='${handleHover}'>
                 <div class='content'>
                 <img src='../img/card_back.jpeg' class='back'/>
                 <article title='Card Set: ${c.setName}' class='front'>
-                <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                <div class='${c?.colors?.[0] || c?.colorIdentity?.[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
                     <header>
                         <span class='name' title='${c.name}'>${c.name}</span>
                         <span class='cost'>${c.manaCost ? renderMana(c.manaCost) : ''}</span>
@@ -133,6 +133,7 @@
             fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
             // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
             .then(resp => {
+                console.log(resp)
                 if(resp.ok) return resp.json()
                 console.log(set)
                 getBooster('CON')

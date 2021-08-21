@@ -69,19 +69,21 @@
         const knockout = document.querySelector('#knockout')
 
         function fetchNew () {
-            console.log(viewModel)
+            // console.log(viewModel)
             getBooster(sets[Math.floor(Math.random()*sets.length)])
         }
 
         function handleHover(data, event) {
             let e = event
-            console.log(e.target)
-            if(e.target.classList.value.includes('back')) {
+            // console.log(e?.target)
+            if(e?.target.classList.value.includes('back')) {
                 e.target.offsetParent.classList.add('flipped')
                 setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
-            } else if(e.target.classList.value.includes('content')) {
+            } else if(e?.target.classList.value.includes('content')) {
                 e.target.classList.add('flipped')
                 setTimeout(()=>e.target.classList.add('done'), 600)
+            } else {
+                return
             }
         }
 
@@ -123,7 +125,7 @@
                 viewModel.cards(newCards)
                 viewModel.loading(false)
                 viewModel.error(false)
-                console.log('state', viewModel.cards(), viewModel.loading(), viewModel.error(), viewModel.handleHover())
+                // console.log('state', viewModel.cards(), viewModel.loading(), viewModel.error(), viewModel.handleHover())
             }).catch(err => {
                 console.error('There was an error parsing the code or fetching the card data. ' + err)
             })
@@ -147,7 +149,7 @@
             let props = cards.map(c => ({
                 ...c,
                 cardTitle: `Card Set: ${c.setName}`,
-                classString: `${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}`,
+                classString: `${c?.colors?.[0] || c?.colorIdentity?.[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}`,
                 cardName: `${c.name}`,
                 manaString: `${c.manaCost ? renderMana(c.manaCost) : ''}`,
                 portrait: `${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'}`,
@@ -157,7 +159,7 @@
                 illustrator: `Illus. @ ${c.artist}`,
                 powerToughness: `${c.types.includes('Creature') ? c.power + ' / ' + c.toughness : ''}`
             }))
-            console.log(props)
+            // console.log(props)
             return props
         }
 
