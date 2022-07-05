@@ -138,7 +138,7 @@
                 : undefined;
 
         const App = () => {
-            const [state, load, setState] = createResource();
+            const [data, {mutate, refetch}] = createResource(fetchBooster());
             createComputed(() =>
                 load({
                     cards: fetchBooster(state.code)
