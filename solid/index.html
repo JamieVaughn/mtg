@@ -26,35 +26,22 @@
         import {
           createSignal,
           onCleanup,
+          createEffect,
+          createComputed,
+          createResource
         } from "https://cdn.skypack.dev/solid-js";
         import { render } from "https://cdn.skypack.dev/solid-js/web";
         import html from "https://cdn.skypack.dev/solid-js/html";
   
-        const SolidApp = () => {
-          const [count, setCount] = createSignal(0),
-            timer = setInterval(() => setCount(count() + 1), 1000);
-          onCleanup(() => clearInterval(timer));
-          return html`<div>${count}</div>`;
-          // or
-          return h("div", {}, count);
-        };
-        render(SolidApp, document.body);
-      </script>
-
-    <script type='module'>
-        import { createSignal, createState, createComputed, createResourceState, createEffect, For, onMount, onCleanup } from "https://cdn.skypack.dev/solid-js";
-        import { render } from "https://cdn.skypack.dev/solid-js/web";
-        import html from "https://cdn.skypack.dev/solid-js/html";
-
         const root = document.querySelector('#root')
         const app = document.querySelector('#app')
 
-        const spinner = html`<svg width='50px' height='50px' viewBox='0 0 50 50'>
+        const Spinner = () => html`<svg width='50px' height='50px' viewBox='0 0 50 50'>
                                 <circle fill="none" stroke="dodgerblue" stroke-width="4"  stroke-dasharray="45,40" cx="25" cy="25" r="15"/>
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
                             </svg>`
 
-        function MyHeader() {
+        const MyHeader = () => {
             return html`<h1 onclick=${(e) => {
                 render(Loading, app)
                 getBooster('CON')
@@ -63,9 +50,7 @@
             </h1>`
         }
 
-        render(MyHeader, root);
-
-        const renderMana = (mana) => html`
+        const RenderMana = (mana) => html`
             ${mana.split(/[\{\}]+/)
                 .filter(i => console.log('filter'), i.length)
                 .map(m => m.length === 1 && m.match(/[BRUGWXETC0-9]/)? html`
@@ -76,18 +61,24 @@
             }
         `
 
-        const handleHover = (e) => {
-            console.log(e)
-            if(e.target.classList.value.includes('back')) {
-                e.target.offsetParent.classList.add('flipped')
-                setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
-            } else if(e.target.classList.value.includes('content')) {
-                e.target.classList.add('flipped')
-                setTimeout(()=>e.target.classList.add('done'), 600)
-            }
+        const Loading = () => {
+            return html`
+            <div class='loading'>
+                <h2>Fetching Magic Cards.</h3>
+                <h6>(This API is rather slow...)</h6>
+                ${() => Spinner}
+            </div>
+            `
         }
+        const Error = (err) => () => html`
+            <div class='error'>
+                <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
+                ${() => Spinner}
+                <h5>${err}</h5>
+            </div>
+            `
 
-        const Cards = (json) => () => {
+            const Cards = (json) => () => {
             // console.log(json)
             // console.log(json ? JSON.parse(json) : '')
             if(!json) return null
@@ -127,53 +118,27 @@
             return markup
         }
 
-        const Loading = () => {
-            return html`
-            <div class='loading'>
-                <h2>Fetching Magic Cards.</h3>
-                <h6>(This API is rather slow...)</h6>
-                ${spinner}
-            </div>
-            `
-        }
-        const Error = (err) => () => html`
-            <div class='error'>
-                <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
-                ${spinner}
-                <h5>${err}</h5>
-            </div>
-            `
 
-        // https://api.magicthegathering.io/v1/sets/<setCode>/booster
-        // function getBooster(set) {
-        //     if(!set) return () => undefined
-        //     return () => fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
-        //     // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
-        //     .then(resp => {
-        //         console.log(set)
-        //         if(resp.ok) return resp.json()
-        //         // getBooster('CON')
-        //     })
-        //     .then(data => {
-        //         console.log(data)
-        //         // render(() => Cards(data.cards), app)
-        //         return data?.cards
-        //     })
-        //     .catch(err => {
-        //         console.log(err)
-        //         return err
-        //     })
-        // }
+        function handleHover(e) {
+            console.log(e)
+            if(e.target.classList.value.includes('back')) {
+                e.target.offsetParent.classList.add('flipped')
+                setTimeout(()=>e.target.offsetParent.classList.add('done'), 600)
+            } else if(e.target.classList.value.includes('content')) {
+                e.target.classList.add('flipped')
+                setTimeout(()=>e.target.classList.add('done'), 600)
+            }
+        }
+
         const fetchBooster = (code) => () =>
             code ? fetch(`https://api.magicthegathering.io/v1/sets/${code}/booster`)
                     .then((r) => r.json())
                     .then((d) => d)
                     .catch((e) => e)
                 : undefined;
-        
 
         const App = () => {
-            const [state, load, setState] = createResourceState();
+            const [state, load, setState] = createResource();
             createComputed(() =>
                 load({
                     cards: fetchBooster(state.code)
@@ -212,7 +177,42 @@
             `
         };
 
+        function getBooster(set) {
+            if(!set) return () => undefined
+            return () => fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
+            // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
+            .then(resp => {
+                console.log(set)
+                if(resp.ok) return resp.json()
+                // getBooster('CON')
+            })
+            .then(data => {
+                console.log(data)
+                // render(() => Cards(data.cards), app)
+                return data?.cards
+            })
+            .catch(err => {
+                console.log(err)
+                return err
+            })
+        }
+
+        render(MyHeader, root);
         render(App, app);
+      </script>
+
+    <script>
+        // import { createSignal, createState, createComputed, createResourceState, createEffect, For, onMount, onCleanup } from "https://cdn.skypack.dev/solid-js";
+        // import { render } from "https://cdn.skypack.dev/solid-js/web";
+        // import html from "https://cdn.skypack.dev/solid-js/html";
+
+        // https://api.magicthegathering.io/v1/sets/<setCode>/booster
+        
+        
+        
+
+        
+
     </script>
 </body>
 </html>
