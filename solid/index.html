@@ -25,6 +25,7 @@
     <script type="module">
         import {
           createSignal,
+          onMount,
           onCleanup,
           createEffect,
           createComputed,
@@ -42,24 +43,39 @@
                             </svg>`
 
         const MyHeader = () => {
+            const [codes, setCodes] = createSignal({code: 'CON', codes: ['CON']})
+            const [cards, setCards] = createSignal([])
+            onMount(() => {
+                if(codes().codes.length === 1) {
+                    fetch('../json/setcodes.json')
+                    .then(resp => resp.json())
+                    .then(data => {
+                        setCodes({
+                            code: data.setCodes[Math.floor(Math.random()*data.setCodes.length)],
+                            codes: data.setCodes
+                        })
+                    })
+                }
+            })
             return html`<h1 onclick=${(e) => {
-                render(Loading, app)
-                getBooster('CON')
+                app.innerHTML = ''
+                render(() => Loading(), app)
+                setCodes({codes: codes().codes, code: codes().codes[Math.floor(Math.random() * codes().codes.length)]})
+                console.log(codes())
+                getBooster(codes().code).then(d => {
+                    console.log('booster', d, d.length)
+                    if(d.length) {
+                        setCards(d)
+                        render(() => App({props: cards}), app)
+                    } else {
+                        render(() => Error, app)
+                    }
+                })
             }}>
                 MTG: Booster Pack Showcase
-            </h1>`
+            </h1>
+            ${() => App({props: cards})}`
         }
-
-        const RenderMana = (mana) => html`
-            ${mana.split(/[\{\}]+/)
-                .filter(i => console.log('filter'), i.length)
-                .map(m => m.length === 1 && m.match(/[BRUGWXETC0-9]/)? html`
-                    <span class='mana ${m.match(/[BRUGW]/) ? 'color' : 'colorless'} ${m}'>
-                        ${m.match(/[BRUGW]/) ? '' : m}
-                    </span>
-                ` : html`${m}`)
-            }
-        `
 
         const Loading = () => {
             return html`
@@ -78,12 +94,30 @@
             </div>
             `
 
-            const Cards = (json) => () => {
+            const RenderMana = (mana) => {
+                const symbols = mana.split(/[\{\}]+/).filter(i => i?.length)
+                console.log('mana', mana, mana.split(/[\{\}]+/), symbols)
+
+                return `${symbols?.map(m => {
+                    if (m.length === 1 && m?.match(/[BRUGWXETC0-9]/)) {
+                        return `
+                            <span class='mana ${m.match(/[BRUGW]/) ? 'color' : 'colorless'} ${m}'>
+                                ${m.match(/[BRUGW]/) ? '' : m}
+                            </span>
+                        `
+                        } else {
+                            return `${m}`
+                        }
+                })
+                }
+                `
+            }
+        
+            const Cards = (cards) => {
             // console.log(json)
             // console.log(json ? JSON.parse(json) : '')
-            if(!json) return null
-            let cards = JSON.parse(json).cards
-            console.log('cards', cards.map(c => c.name))
+            if(!cards?.length) return null
+            console.log('card names', cards.map(c => c.name))
             let markup = cards.map(c => {
                 console.log(c)
                 c ? html`
@@ -91,10 +125,10 @@
                 <div class='content'>
                     <img src='../img/card_back.jpeg' class='back'/>
                     <article title='Card Set: ${c.setName}' class='front'>
-                        <div class='${c.colors[0] || c.colorIdentity[0]} ${c.types.join(' ')} ${c.text && c.text.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                        <div class='${c.colors?.[0] || c.colorIdentity?.[0]} ${c.types?.join(' ')} ${c.text && c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
                             <header>
                                 <span class='name' title='${c.name}'>${c.name}</span>
-                                <span class='cost'>${() => c.manaCost ? renderMana(c.manaCost) : ''}</span>
+                                <span class='cost'>${() => c.manaCost ? RenderMana(c?.manaCost ?? '') : ''}</span>
                             </header>
                             <img
                             class='magic portrait'
@@ -103,11 +137,11 @@
                                 <span class='type' title='Type: ${c.type}'>${c.type}</span>
                             </h3>
                             <div class='card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}'>
-                                ${() => c.text ? c.text && c.text.match(/[\{\}]+/) ? renderMana(c.text) : c.text : c.flavor}
+                                ${() => c.text ? c.text && c?.text?.match(/[\{\}]+/) ? RenderMana(c?.text ?? '') : c.text : c.flavor}
                             </div>
                             <footer class='footnote'>
                                 <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
-                                <span class='p-t'>${c.types.includes('Creature') ? c.power + ' / ' + c.toughness : ''}</span>
+                                <span class='p-t'>${c?.types?.includes('Creature') ? c.power + ' / ' + c.toughness : ''}</span>
                             </footer>
                         </div>
                     </article>
@@ -130,43 +164,23 @@
             }
         }
 
-        const fetchBooster = (code) => () =>
+        const fetchBooster = (code) =>
             code ? fetch(`https://api.magicthegathering.io/v1/sets/${code}/booster`)
                     .then((r) => r.json())
                     .then((d) => d)
                     .catch((e) => e)
                 : undefined;
 
-        const App = () => {
-            const [code, setCode] = createSignal({})
-            const [data, {mutate, refetch}] = createResource(fetchBooster(code));
-
-            createEffect(prev => {
-                console.log('app', data, mutate, refetch, code) // reactive to any state referenced here
+        const App = (props) => {
+            const [cards, setCards] = createSignal([])
+            createEffect(() => {
+                setCards(props.cards)
+                console.log('cards', cards())
             })
-
-            onMount(() => {
-                fetch('../json/setcodes.json').then(resp => resp.json())
-                .then(data => {
-                    setCode({
-                        code: data.setCodes[Math.floor(Math.random()*data.setCodes.length)],
-                        codes: data.setCodes,
-                    })
-                })
-            })
-
             return html`
                 <div>
-                    <div>${() => data.error ? Error(error) : ''}</div>
-                    <div>${() => data.loading ? Loading : ''}</div>
-                    
-                    
-                    <h4>${() => data.loading ? '' : 'Only returning the raw JSON so far...'}</h4>
-                    <code>${() => data.loading ? '' : JSON.stringify(state.cards)}</code>
-
-
                     <div class='showcase'>
-                        ${() => data.loading && false ? '' : Cards(JSON.stringify(state.cards))}
+                        ${cards.length ? () => Cards(cards) : 'no cards'}
                     </div>
                 </div>
             `
@@ -174,7 +188,7 @@
 
         function getBooster(set) {
             if(!set) return () => undefined
-            return () => fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
+            return fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
             // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
             .then(resp => {
                 console.log(set)
@@ -182,7 +196,6 @@
                 // getBooster('CON')
             })
             .then(data => {
-                console.log(data)
                 // render(() => Cards(data.cards), app)
                 return data?.cards
             })
@@ -193,7 +206,6 @@
         }
 
         render(MyHeader, root);
-        render(App, app);
       </script>
 
     <script>
