@@ -138,22 +138,17 @@
                 : undefined;
 
         const App = () => {
-            const [data, {mutate, refetch}] = createResource(fetchBooster());
-            createComputed(() =>
-                load({
-                    cards: fetchBooster(state.code)
-                })
-            );
+            const [code, setCode] = createSignal({})
+            const [data, {mutate, refetch}] = createResource(fetchBooster(code));
 
             createEffect(prev => {
-                console.log(state.code, state.loading.cards, state.cards) // reactive to any state referenced here
+                console.log('app', data, mutate, refetch, code) // reactive to any state referenced here
             })
 
             onMount(() => {
                 fetch('../json/setcodes.json').then(resp => resp.json())
                 .then(data => {
-                    setState({
-                        ...state,
+                    setCode({
                         code: data.setCodes[Math.floor(Math.random()*data.setCodes.length)],
                         codes: data.setCodes,
                     })
@@ -162,16 +157,16 @@
 
             return html`
                 <div>
-                    <div>${() => state.loading.error ? Error(error) : ''}</div>
-                    <div>${() => state.loading.cards ? Loading : ''}</div>
+                    <div>${() => data.error ? Error(error) : ''}</div>
+                    <div>${() => data.loading ? Loading : ''}</div>
                     
                     
-                    <h4>${() => state.loading.cards ? '' : 'Only returning the raw JSON so far...'}</h4>
-                    <code>${() => state.loading.cards ? '' : JSON.stringify(state.cards)}</code>
+                    <h4>${() => data.loading ? '' : 'Only returning the raw JSON so far...'}</h4>
+                    <code>${() => data.loading ? '' : JSON.stringify(state.cards)}</code>
 
 
                     <div class='showcase'>
-                        ${() => state.loading.cards && false ? '' : Cards(JSON.stringify(state.cards))}
+                        ${() => data.loading && false ? '' : Cards(JSON.stringify(state.cards))}
                     </div>
                 </div>
             `
