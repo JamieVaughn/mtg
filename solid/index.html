@@ -42,9 +42,10 @@
                                 <animateTransform attributeName='transform' dur='0.5s' type='rotate' from='0 0 0 ' to='360 0 0' repeatCount='indefinite'/> 
                             </svg>`
 
+        const [cards, setCards] = createSignal([])
+
         const MyHeader = () => {
             const [codes, setCodes] = createSignal({code: 'CON', codes: ['CON']})
-            const [cards, setCards] = createSignal([])
             onMount(() => {
                 if(codes().codes.length === 1) {
                     fetch('../json/setcodes.json')
@@ -59,22 +60,24 @@
             })
             return html`<h1 onclick=${(e) => {
                 app.innerHTML = ''
-                render(() => Loading(), app)
+                render(Loading, app)
                 setCodes({codes: codes().codes, code: codes().codes[Math.floor(Math.random() * codes().codes.length)]})
-                console.log(codes())
+                console.log('codes', codes())
                 getBooster(codes().code).then(d => {
-                    console.log('booster', d, d.length)
-                    if(d.length) {
+                    console.log('booster', d, d?.length)
+                    if(d?.length) {
                         setCards(d)
-                        render(() => App({props: cards}), app)
+                        app.innerHTML = ''
+                        render(App, app)
                     } else {
-                        render(() => Error, app)
+                        render(Error, app)
                     }
                 })
             }}>
                 MTG: Booster Pack Showcase
             </h1>
-            ${() => App({props: cards})}`
+            
+            `
         }
 
         const Loading = () => {
@@ -96,7 +99,7 @@
 
             const RenderMana = (mana) => {
                 const symbols = mana.split(/[\{\}]+/).filter(i => i?.length)
-                console.log('mana', mana, mana.split(/[\{\}]+/), symbols)
+                // console.log('mana', mana, mana.split(/[\{\}]+/), symbols)
 
                 return `${symbols?.map(m => {
                     if (m.length === 1 && m?.match(/[BRUGWXETC0-9]/)) {
@@ -112,6 +115,7 @@
                 }
                 `
             }
+            // const [markup, setMarkup] = createSignal('')
         
             const Cards = (cards) => {
             // console.log(json)
@@ -120,7 +124,7 @@
             console.log('card names', cards.map(c => c.name))
             let markup = cards.map(c => {
                 console.log(c)
-                c ? html`
+                return c ? `
             <div class='card' onMouseover='${handleHover}'>
                 <div class='content'>
                     <img src='../img/card_back.jpeg' class='back'/>
@@ -128,7 +132,7 @@
                         <div class='${c.colors?.[0] || c.colorIdentity?.[0]} ${c.types?.join(' ')} ${c.text && c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
                             <header>
                                 <span class='name' title='${c.name}'>${c.name}</span>
-                                <span class='cost'>${() => c.manaCost ? RenderMana(c?.manaCost ?? '') : ''}</span>
+                                <span class='cost'>${c.manaCost ? RenderMana(c?.manaCost ?? '') : ''}</span>
                             </header>
                             <img
                             class='magic portrait'
@@ -137,7 +141,7 @@
                                 <span class='type' title='Type: ${c.type}'>${c.type}</span>
                             </h3>
                             <div class='card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}'>
-                                ${() => c.text ? c.text && c?.text?.match(/[\{\}]+/) ? RenderMana(c?.text ?? '') : c.text : c.flavor}
+                                ${c.text ? c.text && c?.text?.match(/[\{\}]+/) ? RenderMana(c?.text ?? '') : c.text : c.flavor}
                             </div>
                             <footer class='footnote'>
                                 <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
@@ -148,7 +152,7 @@
                 </div>
             </div>` : ''
         }).join('')
-            console.log(markup)
+            console.log('Cards markup output', markup)
             return markup
         }
 
@@ -171,16 +175,16 @@
                     .catch((e) => e)
                 : undefined;
 
-        const App = (props) => {
-            const [cards, setCards] = createSignal([])
+        const App = () => {
             createEffect(() => {
-                setCards(props.cards)
-                console.log('cards', cards())
+                console.log('app cards', cards())
             })
+            const markup = Cards(cards())
+            return markup
             return html`
                 <div>
                     <div class='showcase'>
-                        ${cards.length ? () => Cards(cards) : 'no cards'}
+                        ${() => html`${markup}`}
                     </div>
                 </div>
             `
@@ -191,7 +195,7 @@
             return fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
             // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
             .then(resp => {
-                console.log(set)
+                console.log('set', set)
                 if(resp.ok) return resp.json()
                 // getBooster('CON')
             })
