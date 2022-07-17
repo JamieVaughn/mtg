@@ -85,25 +85,23 @@
             <div class='loading'>
                 <h2>Fetching Magic Cards.</h3>
                 <h6>(This API is rather slow...)</h6>
-                ${() => Spinner}
+                ${Spinner}
             </div>
             `
         }
         const Error = (err) => () => html`
             <div class='error'>
                 <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
-                ${() => Spinner}
+                ${Spinner}
                 <h5>${err}</h5>
             </div>
             `
 
             const RenderMana = (mana) => {
                 const symbols = mana.split(/[\{\}]+/).filter(i => i?.length)
-                // console.log('mana', mana, mana.split(/[\{\}]+/), symbols)
-
-                return `${symbols?.map(m => {
+                return symbols?.map(m => {
                     if (m.length === 1 && m?.match(/[BRUGWXETC0-9]/)) {
-                        return `
+                        return html`
                             <span class='mana ${m.match(/[BRUGW]/) ? 'color' : 'colorless'} ${m}'>
                                 ${m.match(/[BRUGW]/) ? '' : m}
                             </span>
@@ -112,43 +110,45 @@
                             return `${m}`
                         }
                 })
-                }
-                `
             }
-            // const [markup, setMarkup] = createSignal('')
         
             const Cards = (cards) => {
-            // console.log(json)
-            // console.log(json ? JSON.parse(json) : '')
             if(!cards?.length) return null
             console.log('card names', cards.map(c => c.name))
             let markup = cards.map(c => {
                 console.log(c)
-                const colors = `${c.colors?.[0] || c.colorIdentity?.[0]} ${c.types?.join(' ')} ${c.text && c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}`
-                const cost = `${c.manaCost ? RenderMana(c?.manaCost ?? '') : ''}`
-                const src = c.imageUrl ?? 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'
-                const textClass = `card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}`
-                const text = `${c.text ? c.text && c?.text?.match(/[\{\}]+/) ? RenderMana(c?.text ?? '') : c.text : c.flavor}`
-                const p_t = `${c?.types?.includes('Creature') ? c.power + ' / ' + c.toughness : ''}`
+                if(!c) return null
+                const colors = () => `${(c.colors?.[0] || c.colorIdentity?.[0]) ?? ''} ${c.types?.join(' ')}${c.text?.includes('Devoid') ? ' Devoid' : ''} border ${c.rarity}`
+                const cost = RenderMana(c.manaCost ?? '')
+                const src = () => c.imageUrl ?? 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'
+                const textClass = `card-text${c.text?.length > 160 ? ' small-font' : ''}`
+                const text = () => `${c.text ? c.text && c.text?.match(/[\{\}]+/) ? RenderMana(c.text ?? '') : c.text : c.flavor}`
+                const p_t = () => `${c.types?.includes('Creature') ? c.power + ' / ' + c.toughness : ''}`
+
+                const name = c.name
+                const setname = `Card Set: ${c.setName}`
+                const manacost = `${c.manaCost || '0'}`
+                const cardtype = `Type: ${c.type}`
+
                 return c ? html`
-            <div class='card' onMouseover='${handleHover}'>
+            <div class='card' onMouseover=${handleHover}>
                 <div class='content'>
                     <img src='../img/card_back.jpeg' class='back' />
-                    <article title='Card Set: ${c.setName}' class='front'>
+                    <article title=${setname} class='front'>
                         <div class=${colors}>
                             <header>
-                                <span class='name' title=${c.name}>${c.name}</span>
-                                <span class='cost'>${c.manaCost || 'no cost'}</span>
+                                <span class='name' title=${name}>${name}</span>
+                                <span class='cost'>${cost}</span>
                             </header>
                             <img class='magic portrait' src=${src} />
                             <h3>
-                                <span class='type' title='Type: ${c.type}'>${c.type}</span>
+                                <span class='type' title=${cardtype}>${c.type}</span>
                             </h3>
                             <div class=${textClass}>
                                 ${text}
                             </div>
                             <footer class='footnote'>
-                                <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
+                                <span class='illus' title=${c.artist}>Illus. @ ${c.artist}</span>
                                 <span class='p-t'>${p_t}</span>
                             </footer>
                         </div>
@@ -171,45 +171,42 @@
             }
         }
 
-        const fetchBooster = (code) =>
-            code ? fetch(`https://api.magicthegathering.io/v1/sets/${code}/booster`)
-                    .then((r) => r.json())
-                    .then((d) => d)
-                    .catch((e) => e)
-                : undefined;
-
+        
         const App = () => {
-            createEffect(() => {
-                console.log('app cards', cards())
-            })
             const markup = Cards(cards())
             return html`
-                <div>
-                    <div class='showcase'>
-                        ${markup}
+            <div>
+                <div class='showcase'>
+                    ${() => markup}
                     </div>
                 </div>
             `
         };
-
-        function getBooster(set) {
-            if(!set) return () => undefined
-            return fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
-            // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
-            .then(resp => {
-                console.log('set', set)
-                if(resp.ok) return resp.json()
-                // getBooster('CON')
-            })
-            .then(data => {
-                // render(() => Cards(data.cards), app)
-                return data?.cards
-            })
-            .catch(err => {
-                console.log(err)
-                return err
-            })
-        }
+                
+            function getBooster(set) {
+                if(!set) return () => undefined
+                return fetch(`https://api.magicthegathering.io/v1/sets/${set}/booster`)
+                // fetch(`../json/backup.json`) // Copied 3 booster pack responses in this file in case the API ever goes down, use i.e. data["EVE_cards"]
+                .then(resp => {
+                    console.log('set', set)
+                    if(resp.ok) return resp.json()
+                    getBooster('CON')
+                })
+                .then(data => {
+                    return data?.cards
+                })
+                .catch(err => {
+                    console.log(err)
+                    return err
+                })
+            }
+                
+            const fetchBooster = (code) =>
+                code ? fetch(`https://api.magicthegathering.io/v1/sets/${code}/booster`)
+                        .then((r) => r.json())
+                        .then((d) => d)
+                        .catch((e) => e)
+                    : undefined;
 
         render(MyHeader, root);
       </script>
