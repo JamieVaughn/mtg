@@ -29,7 +29,7 @@
           onCleanup,
           createEffect,
           createComputed,
-          createResource
+          createResource,
         } from "https://cdn.skypack.dev/solid-js";
         import { render } from "https://cdn.skypack.dev/solid-js/web";
         import html from "https://cdn.skypack.dev/solid-js/html";
@@ -124,35 +124,38 @@
             console.log('card names', cards.map(c => c.name))
             let markup = cards.map(c => {
                 console.log(c)
-                return c ? `
+                const colors = `${c.colors?.[0] || c.colorIdentity?.[0]} ${c.types?.join(' ')} ${c.text && c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}`
+                const cost = `${c.manaCost ? RenderMana(c?.manaCost ?? '') : ''}`
+                const src = c.imageUrl ?? 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'
+                const textClass = `card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}`
+                const text = `${c.text ? c.text && c?.text?.match(/[\{\}]+/) ? RenderMana(c?.text ?? '') : c.text : c.flavor}`
+                const p_t = `${c?.types?.includes('Creature') ? c.power + ' / ' + c.toughness : ''}`
+                return c ? html`
             <div class='card' onMouseover='${handleHover}'>
                 <div class='content'>
-                    <img src='../img/card_back.jpeg' class='back'/>
+                    <img src='../img/card_back.jpeg' class='back' />
                     <article title='Card Set: ${c.setName}' class='front'>
-                        <div class='${c.colors?.[0] || c.colorIdentity?.[0]} ${c.types?.join(' ')} ${c.text && c.text?.includes('Devoid') ? 'Devoid' : ''} border ${c.rarity}'>
+                        <div class=${colors}>
                             <header>
-                                <span class='name' title='${c.name}'>${c.name}</span>
-                                <span class='cost'>${c.manaCost ? RenderMana(c?.manaCost ?? '') : ''}</span>
+                                <span class='name' title=${c.name}>${c.name}</span>
+                                <span class='cost'>${c.manaCost || 'no cost'}</span>
                             </header>
-                            <img
-                            class='magic portrait'
-                            src=${c.imageUrl ? c.imageUrl : 'https://via.placeholder.com/200/d3d3d3/222?text=IMAGE+NOT+FOUND'} />
+                            <img class='magic portrait' src=${src} />
                             <h3>
                                 <span class='type' title='Type: ${c.type}'>${c.type}</span>
                             </h3>
-                            <div class='card-text ${c.text && c.text.length > 160 ? 'small-font' : ''}'>
-                                ${c.text ? c.text && c?.text?.match(/[\{\}]+/) ? RenderMana(c?.text ?? '') : c.text : c.flavor}
+                            <div class=${textClass}>
+                                ${text}
                             </div>
                             <footer class='footnote'>
                                 <span class='illus' title='${c.artist}'>Illus. @ ${c.artist}</span>
-                                <span class='p-t'>${c?.types?.includes('Creature') ? c.power + ' / ' + c.toughness : ''}</span>
+                                <span class='p-t'>${p_t}</span>
                             </footer>
                         </div>
                     </article>
                 </div>
             </div>` : ''
-        }).join('')
-            console.log('Cards markup output', markup)
+        })
             return markup
         }
 
@@ -180,11 +183,10 @@
                 console.log('app cards', cards())
             })
             const markup = Cards(cards())
-            return markup
             return html`
                 <div>
                     <div class='showcase'>
-                        ${() => html`${markup}`}
+                        ${markup}
                     </div>
                 </div>
             `
@@ -211,19 +213,5 @@
 
         render(MyHeader, root);
       </script>
-
-    <script>
-        // import { createSignal, createState, createComputed, createResourceState, createEffect, For, onMount, onCleanup } from "https://cdn.skypack.dev/solid-js";
-        // import { render } from "https://cdn.skypack.dev/solid-js/web";
-        // import html from "https://cdn.skypack.dev/solid-js/html";
-
-        // https://api.magicthegathering.io/v1/sets/<setCode>/booster
-        
-        
-        
-
-        
-
-    </script>
 </body>
 </html>
