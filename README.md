@@ -9,12 +9,12 @@ In 2018 - 2019, I used Handlebars to create a customer support application embed
 Lit-HTML was among the first of this class of compact templating libraries to catch my eye, but many other such libraries soon followed. I devised a small templating task of rendering a _Magic: The Gathering_ card booster pack as a way to run each of these libraries through its paces. So with one css style sheet I can try out each view library purely for its templating chops. Here are the contenders<sup>†</sup>:
 
 ### Lightweight templating libraries demonstrated here so far:
+* SolidJS [demo](https://wjv.io/mtg/solid)
 * Lit-HTML [demo](https://wjv.io/mtg/lit-html) 
 * Lit-Element [demo](https://wjv.io/mtg/lit-element) (with double-click lightbox feature)
 * Preact [demo](https://wjv.io/mtg/preact)
 * HauntedJS [demo](https://wjv.io/mtg/haunted)
 * SlimJS [demo](https://wjv.io/mtg/slim) (Not all features implemented)
-* SolidJS [demo](https://wjv.io/mtg/solid) (Only returns raw JSON so far)
 * KnockoutJS [demo](https://wjv.io/mtg/knockout) (The OG framework that started it all in 2010)
 * In progress:
 
@@ -34,10 +34,10 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 | Handlebars*   | ★☆☆☆☆ | 2.2MB | 21.7kB | Template bindings | Heavily Restricted Template Logic, DSL***, No Shadow DOM or Modules |
 | Lit HTMl      | ★★★☆☆ | 519kB | 3.5kB | Flexible, Composability, Modules | HTML strings, No Shadow DOM |
 | Lit Element   | ★★★★☆ | 222kB | 6.9kB | Web Components**, Stateful | Verbose Syntax, HTML Strings |
-| Preact        | ★★★★★ | 704kB | 4kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib |
-| HauntedJS     | ★★★★★ | 74.6kB + 519kB | 5.4kB | "Hooks for Web Components" | Lacks Custom Methods, Manual Props, Dependency: Lit-HTML |
+| SolidJS       | ★★★★★ | 21.1kB | 7.3kB | Hooks, no V-DOM, Declarative, small/fast, typescript, Web components| Proxy Shenanigans, Buildless option has quirks |
+| Preact        | ★★★★☆ | 704kB | 4kB | Composibility, Hooks, componentDidCatch, createContext | No Shadow DOM, Dependency: htm-lib, some edge-case rerendering bugs |
+| HauntedJS     | ★★★★☆ | 74.6kB + 519kB | 5.4kB | "Hooks for Web Components" | Lacks Custom Methods, Manual Props, Dependency: Lit-HTML |
 | AppRun        | ★★★★☆ | 586kB | 4.5kB | Pub-Sub/Elm architecture, custom events/routing/testing included, Web Components, CLI tooling, progressive enhancement (JSX, redux, typescript, dev tooling) | Hard to google for help/answers |
-| SolidJS       | ★★★★☆ | 21.1kB | 7.3kB | Hooks, no V-DOM, Declarative, small/fast, typescript, Web components| Proxy Shenanigans, small community |
 | SlimJS        | ★★☆☆☆ | 5kB   | 2.7kB | Web Components, Minimalist | Difficult to use, Documentation is lacking, No Functional Components, DSL***: Conditional logic, Binding syntax |
 | KnockoutJS        | ★★☆☆☆ | 66kB   | 23.7kB | Historically Interesting (c.2010), Started the trend with Observables | Showing its age, No more updates |
 | In progress:       |  |  |  |  |  |
