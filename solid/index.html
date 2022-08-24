@@ -70,6 +70,7 @@
                         app.innerHTML = ''
                         render(App, app)
                     } else {
+                        app.innerHTML = ''
                         render(Error, app)
                     }
                 })
@@ -91,8 +92,7 @@
         }
         const Error = (err) => () => html`
             <div class='error'>
-                <h2>There was a problem fetching the cards. Attempting Contingency fetch.</h2>
-                ${Spinner}
+                <h2>There was a problem fetching the cards. Please click button again to refetch.</h2>
                 <h5>${err}</h5>
             </div>
             `
@@ -126,10 +126,7 @@
             }
         
             const Cards = (cards) => {
-            if(!cards?.length) return null
-            console.log('card names', cards.map(c => c.name))
             let markup = cards.map(c => {
-                console.log(c)
                 if(!c) return null
                 const colors = () => `${(c.colors?.[0] || c.colorIdentity?.[0]) ?? ''} ${c.types?.join(' ')}${c.text?.includes('Devoid') ? ' Devoid' : ''} border ${c.rarity}`
                 const cost = RenderMana(c.manaCost ?? '')
