@@ -1,5 +1,6 @@
 # MTG Booster Pack Showcase
 
+[repo](https://github.com/JamieVaughn/mtg)
 ## Experiments with various modern, lightweight, templating libraries to render Magic the Gathering cards
 
 This project is a way to take inventory of the best, lightweight, web templating tools available today. I'm ignoring the larger frameworks like React, Vue, Angular. I'm only considering small (<1.4MB), client-side packages that are concerned with templating and hydrating the DOM with data and have a minimal event handling integration. I also avoided libraries with any kind of build step or compilation step (Some of these could use babel + JSX, but I didn't use that for this project).
