@@ -19,13 +19,11 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 * KnockoutJS [demo](https://wjv.io/mtg/knockout) (The OG framework that started it all in 2010)
 * In progress:
 
-* Brahmos [demo](https://wjv.io/mtg/brahmos) https://github.com/brahmosjs/brahmos https://codesandbox.io/s/brahmos-demo-3t8r6?file=/src/concurrent-mode/index.js
+
 * AppRun [demo](https://wjv.io/mtg/apprun) https://github.com/yysun/apprun
 * Cycle [demo](https://wjv.io/mtg/cycle) https://cycle.js.org/
 * [Stimulus](https://stimulusjs.org/)
 * Inferno [demo](https://wjv.io/mtg/inferno)
-* [Ottavino](https://github.com/betterthancode/ottavino) https://webcomponents.dev/edit/RA7SjhwlA7S18lZy9kkL
-* [Neow](https://github.com/neo-web/neow) https://webcomponents.dev/edit/fEa6HG5aeEwJ75vqDVyj
 
 
 ### My opinion on each library for small scale data templating purposes:
@@ -45,9 +43,6 @@ Lit-HTML was among the first of this class of compact templating libraries to ca
 | StimulusJS       | ★★★☆☆? | 1.3MB | 4.6kB | FRP****| |
 | CycleJS       | ★★★☆☆? | 1.3MB | 4.6kB | FRP****| |
 | Inferno       | ★★★☆☆? | 672kB | 20kB |  |  |
-| AlpineJS       | ★★★☆☆? |  |  | Closest to VanillaJS| |
-| Neow       | ★★★☆☆? | 4.2kB | 1.9kB | Tiny, Declarative, Web Components | |
-| Ottavino      | ★★★☆☆? |  4kB | 1.8kB | As small as it gets, Object Constructor, Web components| |
 
 
 ###### <sup>†</sup> These appealing libraries were also considered, but were over the size limit: [RiotJS](https://www.npmjs.com/package/riot), Marko, SkateJS
